@@ -1,0 +1,19 @@
+syntax = "proto3"; //定义了我们使用的Protocol Buffers版本。
+//
+//option java_multiple_files = true;
+//package com.bridge.grpc.helloworld;
+
+//表明我们定义了一个命名为Simple的服务(接口)，内部有一个远程rpc方法，名字为SayHello。
+//我们只要在server端实现这个接口，在实现类中书写我们的业务代码。在client端调用这个接口。
+service Simple{
+  rpc SayHello(HelloRequest) returns (HelloReplay){}
+}
+
+//请求的结构体
+message HelloRequest{
+  string name = 1;
+}
+//返回的结构体
+message HelloReplay{
+  string message = 1;
+}
