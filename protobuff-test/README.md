@@ -1,3 +1,15 @@
+#### 本目录结构：
+
+go-server & myproto-go 两个均用于充当客户端和服务端。
+
+java-client只用于充当客户端，myproto-java既可充当客户端又可充当服务端。
+
+go-server与java-client使用的为同一个simple.proto文件来通信。
+
+myproto-go与myproto-java使用的为同一个HelloWorld.proto文件来通信。
+
+#### 关于GRPC通信需要注意的点：
+
 注意：在使用protoc生成代码的时候，若指定包名，则java端和golang端包名应当相同，否则在grpc通信时，会找不到服务地址。出现unknown service "xxx"的错误。
 
 因此，在生成代码的时候，我们可以选择不指定options和package。
