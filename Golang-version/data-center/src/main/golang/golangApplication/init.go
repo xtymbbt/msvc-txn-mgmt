@@ -1,0 +1,4 @@
+package golangApplication
+
+func init() {
+}

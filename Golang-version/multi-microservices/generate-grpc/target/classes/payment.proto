@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+message HttpRequest {
+  bool online = 1;
+  uint32 pos = 2;
+  string UUID = 3;
+  bool is_the_last_service = 4;
+  string db_name = 5;
+  string table_name = 6;
+  bool method1 = 7;
+  bool method2 = 8;
+  uint32 query = 9;
+  map<string, string> data = 10;
+}
+
+message HttpResponse {
+  bool success = 1;
+}
+
+service Payment {
+  rpc sendToDataCenter (HttpRequest) returns (HttpResponse);
+}
+
+// java: mvn compile

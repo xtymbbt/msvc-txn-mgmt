@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+message HttpRequest {
+  bool online = 1;
+  uint32 pos = 2;
+  string tree_uuid = 3;
+  string last_service = 4;
+  string current_service = 5;
+  string next_service = 6;
+  string db_name = 7;
+  string table_name = 8;
+  bool method1 = 9;
+  bool method2 = 10;
+  uint32 query = 11;
+  map<string, string> data = 12;
+}
+
+message HttpResponse {
+  bool success = 1;
+}
+
+service CommonInfo {
+  rpc sendToDataCenter (HttpRequest) returns (HttpResponse);
+}
+
+// java: mvn compile
