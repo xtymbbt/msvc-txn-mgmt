@@ -1,4 +1,0 @@
-package golangApplication
-
-func init() {
-}

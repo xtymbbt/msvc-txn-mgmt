@@ -2,8 +2,8 @@ package golangApplication
 
 import (
 	"../proto"
-	"google.golang.org/grpc"
 	"../server"
+	"google.golang.org/grpc"
 )
 
 func register(s *grpc.Server) {

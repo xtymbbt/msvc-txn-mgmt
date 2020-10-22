@@ -7,5 +7,16 @@ package config
 const (
 	PORT       = ":1996"
 	TIMELAPSES = 5
+	DBDriver   = "mysql"
+	DBUrl = "my.aliyun.com"
+	DBUser = "root"
+	DBPassword = "Bupt_Bridge_Wang"
+	DBMaxIdleConn = 16
+	DBMaxOpenConn = 100
 )
+
+var (
+	DBNAME = []string{"seata_account", "seata_order", "seata_storage"}
+)
+
 

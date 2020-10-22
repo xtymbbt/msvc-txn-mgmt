@@ -4,6 +4,6 @@ import (
 	"../proto"
 )
 
-func Write([]*commonInfo.HttpRequest) {
-
+func Write(data []*commonInfo.HttpRequest) {
+	
 }

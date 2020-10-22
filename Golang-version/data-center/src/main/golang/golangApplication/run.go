@@ -2,6 +2,7 @@ package golangApplication
 
 import (
 	"../../../resources/config"
+	_ "../database"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
