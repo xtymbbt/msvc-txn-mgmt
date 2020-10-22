@@ -23,11 +23,10 @@ public class StorageController {
     public CommonResult decrease(@RequestParam("productId") Long productId,
                                  @RequestParam("count") Integer count,
                                  @RequestParam(value = "UUID", required = false) UUID globalTransactionUUID,
-                                 @RequestParam(value = "pos", required = false) Integer pos,
-                                 @RequestParam(value = "lastService", required = false) UUID lastServiceUUID){
+                                 @RequestParam(value = "pos", required = false) Integer pos){
         if (globalTransactionUUID == null) {globalTransactionUUID = UUID.randomUUID();}
         if (pos == null) {pos = 0;}else {pos++;}
-        storageService.decrease(productId,count, globalTransactionUUID, pos, lastServiceUUID);
+        storageService.decrease(productId,count, globalTransactionUUID, pos);
         return new CommonResult(200, "decrease storage succeeded!");
     }
 }

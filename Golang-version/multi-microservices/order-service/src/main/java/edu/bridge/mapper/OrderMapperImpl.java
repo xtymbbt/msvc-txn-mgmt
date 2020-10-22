@@ -33,7 +33,7 @@ public class OrderMapperImpl implements OrderMapper {
      * @param order
      */
     @Override
-    public void create(Order order, UUID uuid, int pos, boolean isTheLastService) {
+    public void create(Order order, UUID uuid, int pos, UUID serviceUUID, int mapperNum, int serviceNum) {
         log.info("--->begin send to data center<---");
         CommonInfoGrpcClient client = new CommonInfoGrpcClient(host,port);
         Map<String, String> data = new LinkedHashMap<String, String>();
@@ -48,9 +48,9 @@ public class OrderMapperImpl implements OrderMapper {
          * false true = 改
          * false false = 查
          */
-        boolean replay = client.sendToDataCenter(true, pos, uuid, "lastService",
-                "currentService", "nextService", "test_order",
-                "order", true, true, 0, data);
+        boolean replay = client.sendToDataCenter(true, pos, uuid, serviceUUID,
+                mapperNum, serviceNum, "test_order",
+                "order", true, true, "", data);
         if (replay) {
             log.info("successfully sent to DataCenter at PORT:{}", port);
         } else {
@@ -64,7 +64,7 @@ public class OrderMapperImpl implements OrderMapper {
     }
 
     @Override
-    public void update(Long userId, Integer status, UUID uuid, int pos, boolean isTheLastService) {
+    public void update(Long userId, Integer status, UUID uuid, int pos, UUID serviceUUID, int mapperNum, int serviceNum) {
         log.info("--->begin send to data center<---");
         CommonInfoGrpcClient client = new CommonInfoGrpcClient(host,port);
         Map<String, String> data = new LinkedHashMap<String, String>();
@@ -83,9 +83,9 @@ public class OrderMapperImpl implements OrderMapper {
          * false true = 改
          * false false = 查
          */
-        boolean replay = client.sendToDataCenter(true, pos, uuid, "lastService",
-                "currentService", "nextService", "test_order",
-                "order", false, true, 0, data);
+        boolean replay = client.sendToDataCenter(true, pos, uuid, serviceUUID,
+                mapperNum, serviceNum, "test_order",
+                "order", false, true, "user_id", data);
         if (replay) {
             log.info("successfully sent to DataCenter at PORT:{}", port);
         } else {

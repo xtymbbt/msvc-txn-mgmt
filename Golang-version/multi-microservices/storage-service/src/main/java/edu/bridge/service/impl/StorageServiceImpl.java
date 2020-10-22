@@ -20,10 +20,10 @@ public class StorageServiceImpl implements StorageService {
     private StorageMapper storageMapper;
 
     @Override
-    public void decrease(Long productId, Integer count, UUID uuid, int pos, UUID lastServiceUUID) {
+    public void decrease(Long productId, Integer count, UUID uuid, int pos) {
         UUID currentServiceUUID = UUID.randomUUID();
         log.info("------>begin minus storage<-----");
-        storageMapper.decrease(productId, count, uuid, lastServiceUUID, currentServiceUUID, null);
+        storageMapper.decrease(productId, count, uuid, currentServiceUUID, 1, 0, pos);
         log.info("------>minus storage ended<-----");
     }
 }

@@ -10,6 +10,6 @@ import java.util.UUID;
  * @date 2020/10/16 11:39
  */
 public interface OrderMapper {
-    void create(Order order, UUID uuid, int pos, boolean isTheLastService);
-    void update(Long userId, Integer status, UUID uuid, int pos, boolean isTheLastService);
+    void create(Order order, UUID uuid, int pos, UUID serviceUUID, int mapperNum, int serviceNum);
+    void update(Long userId, Integer status, UUID uuid, int pos, UUID serviceUUID, int mapperNum, int serviceNum);
 }

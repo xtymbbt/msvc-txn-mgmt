@@ -25,18 +25,6 @@ func main() {
 	//	name = os.Args[1]
 	//}
 	r, err := c.SendToDataCenter(context.Background(), &commonInfo.HttpRequest{
-		Online:         false,
-		Pos:            0,
-		TreeUuid:       "",
-		LastService:    "",
-		CurrentService: "",
-		NextService:    "",
-		DbName:         "",
-		TableName:      "",
-		Method1:        false,
-		Method2:        false,
-		Query:          0,
-		Data:           nil,
 	})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)

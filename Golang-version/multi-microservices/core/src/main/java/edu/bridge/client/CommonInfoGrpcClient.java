@@ -40,17 +40,17 @@ public class CommonInfoGrpcClient {
      *   bool method2 = 7;
      *   map<string, string> data = 8;
      */
-    public boolean sendToDataCenter(boolean online, int pos, UUID UUID, String lastService,
-                                    String currentService, String nextService,
+    public boolean sendToDataCenter(boolean online, int pos, UUID UUID, UUID serviceUUID,
+                                    int mapperNum, int serviceNum,
                                     String dbName, String tableName, boolean method1,
-                                    boolean method2, int query, Map<String, String> data){
+                                    boolean method2, String query, Map<String, String> data){
         CommonInfoOuterClass.HttpRequest req = CommonInfoOuterClass.HttpRequest.newBuilder()
                 .setOnline(online)
                 .setPos(pos)
                 .setTreeUuid(UUID.toString())
-                .setLastService(lastService)
-                .setCurrentService(currentService)
-                .setNextService(nextService)
+                .setServiceUuid(serviceUUID.toString())
+                .setMapperNum(mapperNum)
+                .setServiceNum(serviceNum)
                 .setDbName(dbName)
                 .setTableName(tableName)
                 .setMethod1(method1)

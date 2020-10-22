@@ -23,7 +23,7 @@ public class StorageMapperImpl implements StorageMapper {
     private int port;
 
     @Override
-    public void decrease(Long productId, Integer count, UUID uuid, UUID lastServiceUUID, UUID currentServiceUUID, UUID nextServiceUUID) {
+    public void decrease(Long productId, Integer count, UUID uuid, UUID serviceUUID, int mapperNum, int serviceNum, int pos) {
         String used = "+"+count;
         String residue = "-"+count;
         log.info("--->begin send to data center<---");
@@ -38,12 +38,10 @@ public class StorageMapperImpl implements StorageMapper {
         data.put("product_id", productId.toString());
         data.put("used", used);
         data.put("residue", residue);
-        boolean replay = client.sendToDataCenter(true, 0, uuid,
-                lastServiceUUID == null ? "" : lastServiceUUID.toString(),
-                currentServiceUUID == null ? "" : currentServiceUUID.toString(),
-                nextServiceUUID == null ? "" : nextServiceUUID.toString(),
+        boolean replay = client.sendToDataCenter(true, pos, uuid,
+                serviceUUID, mapperNum, serviceNum,
                 "test_storage",
-                "storage", false, true, 0, data);
+                "storage", false, true, "product_id", data);
         if (replay) {
             log.info("successfully sent to DataCenter at PORT:{}", port);
         } else {

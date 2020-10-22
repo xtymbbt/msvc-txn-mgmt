@@ -9,5 +9,5 @@ import java.util.UUID;
  * @date 2020/10/16 11:19
  */
 public interface PaymentMapper {
-    void decrease(Long userId, BigDecimal money, UUID uuid, int pos, boolean isTheLastService);
+    void decrease(Long userId, BigDecimal money, UUID uuid, UUID serviceUUID, int mapperNum, int serviceNum, int pos);
 }

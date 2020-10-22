@@ -28,8 +28,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void Create(Order order, UUID uuid, int pos) {
+        UUID serviceUUID = UUID.randomUUID();
+        int mapperNum = 2;
+        int serviceNum = 2;
+
         log.info("----->starting creating order<--------");
-        orderMapper.create(order, uuid, pos, false);
+        orderMapper.create(order, uuid, pos, serviceUUID, mapperNum, serviceNum);
         log.info("----->order service beginning to call StorageService, minus count<-------");
         storageService.decrease(order.getProductId(), order.getCount(), uuid, pos);
         log.info("----->order service called StorageService, minus ended.<------");
@@ -40,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("----->order service called AccountService, minus ended.<------");
 
         log.info("----->starting modifying order<--------");
-        orderMapper.update(order.getUserId(), 0, uuid, pos, true);
+        orderMapper.update(order.getUserId(), 0, uuid, pos, serviceUUID, mapperNum, serviceNum);
         log.info("----->modifying order ended<--------");
 
         log.info("----->ALL HAVE BEEN DONE!<------");

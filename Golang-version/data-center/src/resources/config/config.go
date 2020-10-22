@@ -5,6 +5,7 @@ package config
  */
 
 const (
-	PORT = ":1996"
+	PORT       = ":1996"
+	TIMELAPSES = 5
 )
 

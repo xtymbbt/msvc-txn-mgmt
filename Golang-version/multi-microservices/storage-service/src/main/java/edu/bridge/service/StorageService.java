@@ -8,5 +8,5 @@ import java.util.UUID;
  * @date 2020/10/16 13:43
  */
 public interface StorageService {
-    void decrease(Long productId, Integer count, UUID uuid, int pos, UUID lastServiceUUID);
+    void decrease(Long productId, Integer count, UUID uuid, int pos);
 }

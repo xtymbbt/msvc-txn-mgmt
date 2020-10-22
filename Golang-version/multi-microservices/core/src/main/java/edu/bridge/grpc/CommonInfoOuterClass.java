@@ -37,34 +37,24 @@ public final class CommonInfoOuterClass {
         getTreeUuidBytes();
 
     /**
-     * <code>string last_service = 4;</code>
+     * <code>string service_uuid = 4;</code>
      */
-    String getLastService();
+    String getServiceUuid();
     /**
-     * <code>string last_service = 4;</code>
+     * <code>string service_uuid = 4;</code>
      */
     com.google.protobuf.ByteString
-        getLastServiceBytes();
+        getServiceUuidBytes();
 
     /**
-     * <code>string current_service = 5;</code>
+     * <code>uint32 mapper_num = 5;</code>
      */
-    String getCurrentService();
-    /**
-     * <code>string current_service = 5;</code>
-     */
-    com.google.protobuf.ByteString
-        getCurrentServiceBytes();
+    int getMapperNum();
 
     /**
-     * <code>string next_service = 6;</code>
+     * <code>uint32 service_num = 6;</code>
      */
-    String getNextService();
-    /**
-     * <code>string next_service = 6;</code>
-     */
-    com.google.protobuf.ByteString
-        getNextServiceBytes();
+    int getServiceNum();
 
     /**
      * <code>string db_name = 7;</code>
@@ -97,9 +87,14 @@ public final class CommonInfoOuterClass {
     boolean getMethod2();
 
     /**
-     * <code>uint32 query = 11;</code>
+     * <code>string query = 11;</code>
      */
-    int getQuery();
+    String getQuery();
+    /**
+     * <code>string query = 11;</code>
+     */
+    com.google.protobuf.ByteString
+        getQueryBytes();
 
     /**
      * <code>map&lt;string, string&gt; data = 12;</code>
@@ -151,14 +146,14 @@ public final class CommonInfoOuterClass {
       online_ = false;
       pos_ = 0;
       treeUuid_ = "";
-      lastService_ = "";
-      currentService_ = "";
-      nextService_ = "";
+      serviceUuid_ = "";
+      mapperNum_ = 0;
+      serviceNum_ = 0;
       dbName_ = "";
       tableName_ = "";
       method1_ = false;
       method2_ = false;
-      query_ = 0;
+      query_ = "";
     }
 
     @Override
@@ -211,19 +206,17 @@ public final class CommonInfoOuterClass {
             case 34: {
               String s = input.readStringRequireUtf8();
 
-              lastService_ = s;
+              serviceUuid_ = s;
               break;
             }
-            case 42: {
-              String s = input.readStringRequireUtf8();
+            case 40: {
 
-              currentService_ = s;
+              mapperNum_ = input.readUInt32();
               break;
             }
-            case 50: {
-              String s = input.readStringRequireUtf8();
+            case 48: {
 
-              nextService_ = s;
+              serviceNum_ = input.readUInt32();
               break;
             }
             case 58: {
@@ -248,9 +241,10 @@ public final class CommonInfoOuterClass {
               method2_ = input.readBool();
               break;
             }
-            case 88: {
+            case 90: {
+              String s = input.readStringRequireUtf8();
 
-              query_ = input.readUInt32();
+              query_ = s;
               break;
             }
             case 98: {
@@ -354,106 +348,56 @@ public final class CommonInfoOuterClass {
       }
     }
 
-    public static final int LAST_SERVICE_FIELD_NUMBER = 4;
-    private volatile Object lastService_;
+    public static final int SERVICE_UUID_FIELD_NUMBER = 4;
+    private volatile Object serviceUuid_;
     /**
-     * <code>string last_service = 4;</code>
+     * <code>string service_uuid = 4;</code>
      */
-    public String getLastService() {
-      Object ref = lastService_;
+    public String getServiceUuid() {
+      Object ref = serviceUuid_;
       if (ref instanceof String) {
         return (String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
-        lastService_ = s;
+        serviceUuid_ = s;
         return s;
       }
     }
     /**
-     * <code>string last_service = 4;</code>
+     * <code>string service_uuid = 4;</code>
      */
     public com.google.protobuf.ByteString
-        getLastServiceBytes() {
-      Object ref = lastService_;
+        getServiceUuidBytes() {
+      Object ref = serviceUuid_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (String) ref);
-        lastService_ = b;
+        serviceUuid_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    public static final int CURRENT_SERVICE_FIELD_NUMBER = 5;
-    private volatile Object currentService_;
+    public static final int MAPPER_NUM_FIELD_NUMBER = 5;
+    private int mapperNum_;
     /**
-     * <code>string current_service = 5;</code>
+     * <code>uint32 mapper_num = 5;</code>
      */
-    public String getCurrentService() {
-      Object ref = currentService_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        currentService_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string current_service = 5;</code>
-     */
-    public com.google.protobuf.ByteString
-        getCurrentServiceBytes() {
-      Object ref = currentService_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        currentService_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getMapperNum() {
+      return mapperNum_;
     }
 
-    public static final int NEXT_SERVICE_FIELD_NUMBER = 6;
-    private volatile Object nextService_;
+    public static final int SERVICE_NUM_FIELD_NUMBER = 6;
+    private int serviceNum_;
     /**
-     * <code>string next_service = 6;</code>
+     * <code>uint32 service_num = 6;</code>
      */
-    public String getNextService() {
-      Object ref = nextService_;
-      if (ref instanceof String) {
-        return (String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
-        nextService_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string next_service = 6;</code>
-     */
-    public com.google.protobuf.ByteString
-        getNextServiceBytes() {
-      Object ref = nextService_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        nextService_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public int getServiceNum() {
+      return serviceNum_;
     }
 
     public static final int DB_NAME_FIELD_NUMBER = 7;
@@ -543,12 +487,37 @@ public final class CommonInfoOuterClass {
     }
 
     public static final int QUERY_FIELD_NUMBER = 11;
-    private int query_;
+    private volatile Object query_;
     /**
-     * <code>uint32 query = 11;</code>
+     * <code>string query = 11;</code>
      */
-    public int getQuery() {
-      return query_;
+    public String getQuery() {
+      Object ref = query_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        query_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string query = 11;</code>
+     */
+    public com.google.protobuf.ByteString
+        getQueryBytes() {
+      Object ref = query_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (String) ref);
+        query_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int DATA_FIELD_NUMBER = 12;
@@ -648,14 +617,14 @@ public final class CommonInfoOuterClass {
       if (!getTreeUuidBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, treeUuid_);
       }
-      if (!getLastServiceBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, lastService_);
+      if (!getServiceUuidBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, serviceUuid_);
       }
-      if (!getCurrentServiceBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, currentService_);
+      if (mapperNum_ != 0) {
+        output.writeUInt32(5, mapperNum_);
       }
-      if (!getNextServiceBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, nextService_);
+      if (serviceNum_ != 0) {
+        output.writeUInt32(6, serviceNum_);
       }
       if (!getDbNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 7, dbName_);
@@ -669,8 +638,8 @@ public final class CommonInfoOuterClass {
       if (method2_ != false) {
         output.writeBool(10, method2_);
       }
-      if (query_ != 0) {
-        output.writeUInt32(11, query_);
+      if (!getQueryBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 11, query_);
       }
       com.google.protobuf.GeneratedMessageV3
         .serializeStringMapTo(
@@ -697,14 +666,16 @@ public final class CommonInfoOuterClass {
       if (!getTreeUuidBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, treeUuid_);
       }
-      if (!getLastServiceBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, lastService_);
+      if (!getServiceUuidBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, serviceUuid_);
       }
-      if (!getCurrentServiceBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, currentService_);
+      if (mapperNum_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, mapperNum_);
       }
-      if (!getNextServiceBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, nextService_);
+      if (serviceNum_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(6, serviceNum_);
       }
       if (!getDbNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, dbName_);
@@ -720,9 +691,8 @@ public final class CommonInfoOuterClass {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(10, method2_);
       }
-      if (query_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(11, query_);
+      if (!getQueryBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, query_);
       }
       for (java.util.Map.Entry<String, String> entry
            : internalGetData().getMap().entrySet()) {
@@ -756,12 +726,12 @@ public final class CommonInfoOuterClass {
           == other.getPos());
       result = result && getTreeUuid()
           .equals(other.getTreeUuid());
-      result = result && getLastService()
-          .equals(other.getLastService());
-      result = result && getCurrentService()
-          .equals(other.getCurrentService());
-      result = result && getNextService()
-          .equals(other.getNextService());
+      result = result && getServiceUuid()
+          .equals(other.getServiceUuid());
+      result = result && (getMapperNum()
+          == other.getMapperNum());
+      result = result && (getServiceNum()
+          == other.getServiceNum());
       result = result && getDbName()
           .equals(other.getDbName());
       result = result && getTableName()
@@ -770,8 +740,8 @@ public final class CommonInfoOuterClass {
           == other.getMethod1());
       result = result && (getMethod2()
           == other.getMethod2());
-      result = result && (getQuery()
-          == other.getQuery());
+      result = result && getQuery()
+          .equals(other.getQuery());
       result = result && internalGetData().equals(
           other.internalGetData());
       result = result && unknownFields.equals(other.unknownFields);
@@ -792,12 +762,12 @@ public final class CommonInfoOuterClass {
       hash = (53 * hash) + getPos();
       hash = (37 * hash) + TREE_UUID_FIELD_NUMBER;
       hash = (53 * hash) + getTreeUuid().hashCode();
-      hash = (37 * hash) + LAST_SERVICE_FIELD_NUMBER;
-      hash = (53 * hash) + getLastService().hashCode();
-      hash = (37 * hash) + CURRENT_SERVICE_FIELD_NUMBER;
-      hash = (53 * hash) + getCurrentService().hashCode();
-      hash = (37 * hash) + NEXT_SERVICE_FIELD_NUMBER;
-      hash = (53 * hash) + getNextService().hashCode();
+      hash = (37 * hash) + SERVICE_UUID_FIELD_NUMBER;
+      hash = (53 * hash) + getServiceUuid().hashCode();
+      hash = (37 * hash) + MAPPER_NUM_FIELD_NUMBER;
+      hash = (53 * hash) + getMapperNum();
+      hash = (37 * hash) + SERVICE_NUM_FIELD_NUMBER;
+      hash = (53 * hash) + getServiceNum();
       hash = (37 * hash) + DB_NAME_FIELD_NUMBER;
       hash = (53 * hash) + getDbName().hashCode();
       hash = (37 * hash) + TABLE_NAME_FIELD_NUMBER;
@@ -809,7 +779,7 @@ public final class CommonInfoOuterClass {
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getMethod2());
       hash = (37 * hash) + QUERY_FIELD_NUMBER;
-      hash = (53 * hash) + getQuery();
+      hash = (53 * hash) + getQuery().hashCode();
       if (!internalGetData().getMap().isEmpty()) {
         hash = (37 * hash) + DATA_FIELD_NUMBER;
         hash = (53 * hash) + internalGetData().hashCode();
@@ -971,11 +941,11 @@ public final class CommonInfoOuterClass {
 
         treeUuid_ = "";
 
-        lastService_ = "";
+        serviceUuid_ = "";
 
-        currentService_ = "";
+        mapperNum_ = 0;
 
-        nextService_ = "";
+        serviceNum_ = 0;
 
         dbName_ = "";
 
@@ -985,7 +955,7 @@ public final class CommonInfoOuterClass {
 
         method2_ = false;
 
-        query_ = 0;
+        query_ = "";
 
         internalGetMutableData().clear();
         return this;
@@ -1015,9 +985,9 @@ public final class CommonInfoOuterClass {
         result.online_ = online_;
         result.pos_ = pos_;
         result.treeUuid_ = treeUuid_;
-        result.lastService_ = lastService_;
-        result.currentService_ = currentService_;
-        result.nextService_ = nextService_;
+        result.serviceUuid_ = serviceUuid_;
+        result.mapperNum_ = mapperNum_;
+        result.serviceNum_ = serviceNum_;
         result.dbName_ = dbName_;
         result.tableName_ = tableName_;
         result.method1_ = method1_;
@@ -1077,17 +1047,15 @@ public final class CommonInfoOuterClass {
           treeUuid_ = other.treeUuid_;
           onChanged();
         }
-        if (!other.getLastService().isEmpty()) {
-          lastService_ = other.lastService_;
+        if (!other.getServiceUuid().isEmpty()) {
+          serviceUuid_ = other.serviceUuid_;
           onChanged();
         }
-        if (!other.getCurrentService().isEmpty()) {
-          currentService_ = other.currentService_;
-          onChanged();
+        if (other.getMapperNum() != 0) {
+          setMapperNum(other.getMapperNum());
         }
-        if (!other.getNextService().isEmpty()) {
-          nextService_ = other.nextService_;
-          onChanged();
+        if (other.getServiceNum() != 0) {
+          setServiceNum(other.getServiceNum());
         }
         if (!other.getDbName().isEmpty()) {
           dbName_ = other.dbName_;
@@ -1103,8 +1071,9 @@ public final class CommonInfoOuterClass {
         if (other.getMethod2() != false) {
           setMethod2(other.getMethod2());
         }
-        if (other.getQuery() != 0) {
-          setQuery(other.getQuery());
+        if (!other.getQuery().isEmpty()) {
+          query_ = other.query_;
+          onChanged();
         }
         internalGetMutableData().mergeFrom(
             other.internalGetData());
@@ -1257,209 +1226,123 @@ public final class CommonInfoOuterClass {
         return this;
       }
 
-      private Object lastService_ = "";
+      private Object serviceUuid_ = "";
       /**
-       * <code>string last_service = 4;</code>
+       * <code>string service_uuid = 4;</code>
        */
-      public String getLastService() {
-        Object ref = lastService_;
+      public String getServiceUuid() {
+        Object ref = serviceUuid_;
         if (!(ref instanceof String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           String s = bs.toStringUtf8();
-          lastService_ = s;
+          serviceUuid_ = s;
           return s;
         } else {
           return (String) ref;
         }
       }
       /**
-       * <code>string last_service = 4;</code>
+       * <code>string service_uuid = 4;</code>
        */
       public com.google.protobuf.ByteString
-          getLastServiceBytes() {
-        Object ref = lastService_;
+          getServiceUuidBytes() {
+        Object ref = serviceUuid_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (String) ref);
-          lastService_ = b;
+          serviceUuid_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>string last_service = 4;</code>
+       * <code>string service_uuid = 4;</code>
        */
-      public Builder setLastService(
+      public Builder setServiceUuid(
           String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        lastService_ = value;
+        serviceUuid_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string last_service = 4;</code>
+       * <code>string service_uuid = 4;</code>
        */
-      public Builder clearLastService() {
+      public Builder clearServiceUuid() {
         
-        lastService_ = getDefaultInstance().getLastService();
+        serviceUuid_ = getDefaultInstance().getServiceUuid();
         onChanged();
         return this;
       }
       /**
-       * <code>string last_service = 4;</code>
+       * <code>string service_uuid = 4;</code>
        */
-      public Builder setLastServiceBytes(
+      public Builder setServiceUuidBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
         
-        lastService_ = value;
+        serviceUuid_ = value;
         onChanged();
         return this;
       }
 
-      private Object currentService_ = "";
+      private int mapperNum_ ;
       /**
-       * <code>string current_service = 5;</code>
+       * <code>uint32 mapper_num = 5;</code>
        */
-      public String getCurrentService() {
-        Object ref = currentService_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          currentService_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getMapperNum() {
+        return mapperNum_;
       }
       /**
-       * <code>string current_service = 5;</code>
+       * <code>uint32 mapper_num = 5;</code>
        */
-      public com.google.protobuf.ByteString
-          getCurrentServiceBytes() {
-        Object ref = currentService_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          currentService_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string current_service = 5;</code>
-       */
-      public Builder setCurrentService(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        currentService_ = value;
+      public Builder setMapperNum(int value) {
+        
+        mapperNum_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string current_service = 5;</code>
+       * <code>uint32 mapper_num = 5;</code>
        */
-      public Builder clearCurrentService() {
+      public Builder clearMapperNum() {
         
-        currentService_ = getDefaultInstance().getCurrentService();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string current_service = 5;</code>
-       */
-      public Builder setCurrentServiceBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        currentService_ = value;
+        mapperNum_ = 0;
         onChanged();
         return this;
       }
 
-      private Object nextService_ = "";
+      private int serviceNum_ ;
       /**
-       * <code>string next_service = 6;</code>
+       * <code>uint32 service_num = 6;</code>
        */
-      public String getNextService() {
-        Object ref = nextService_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          nextService_ = s;
-          return s;
-        } else {
-          return (String) ref;
-        }
+      public int getServiceNum() {
+        return serviceNum_;
       }
       /**
-       * <code>string next_service = 6;</code>
+       * <code>uint32 service_num = 6;</code>
        */
-      public com.google.protobuf.ByteString
-          getNextServiceBytes() {
-        Object ref = nextService_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          nextService_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string next_service = 6;</code>
-       */
-      public Builder setNextService(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        nextService_ = value;
+      public Builder setServiceNum(int value) {
+        
+        serviceNum_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string next_service = 6;</code>
+       * <code>uint32 service_num = 6;</code>
        */
-      public Builder clearNextService() {
+      public Builder clearServiceNum() {
         
-        nextService_ = getDefaultInstance().getNextService();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string next_service = 6;</code>
-       */
-      public Builder setNextServiceBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        nextService_ = value;
+        serviceNum_ = 0;
         onChanged();
         return this;
       }
@@ -1654,28 +1537,71 @@ public final class CommonInfoOuterClass {
         return this;
       }
 
-      private int query_ ;
+      private Object query_ = "";
       /**
-       * <code>uint32 query = 11;</code>
+       * <code>string query = 11;</code>
        */
-      public int getQuery() {
-        return query_;
+      public String getQuery() {
+        Object ref = query_;
+        if (!(ref instanceof String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          String s = bs.toStringUtf8();
+          query_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
       }
       /**
-       * <code>uint32 query = 11;</code>
+       * <code>string query = 11;</code>
        */
-      public Builder setQuery(int value) {
-        
+      public com.google.protobuf.ByteString
+          getQueryBytes() {
+        Object ref = query_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (String) ref);
+          query_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string query = 11;</code>
+       */
+      public Builder setQuery(
+          String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
         query_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 query = 11;</code>
+       * <code>string query = 11;</code>
        */
       public Builder clearQuery() {
         
-        query_ = 0;
+        query_ = getDefaultInstance().getQuery();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string query = 11;</code>
+       */
+      public Builder setQueryBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        query_ = value;
         onChanged();
         return this;
       }
@@ -2327,17 +2253,17 @@ public final class CommonInfoOuterClass {
       descriptor;
   static {
     String[] descriptorData = {
-      "\n\020commonInfo.proto\"\253\002\n\013HttpRequest\022\016\n\006on" +
+      "\n\020commonInfo.proto\"\245\002\n\013HttpRequest\022\016\n\006on" +
       "line\030\001 \001(\010\022\013\n\003pos\030\002 \001(\r\022\021\n\ttree_uuid\030\003 \001" +
-      "(\t\022\024\n\014last_service\030\004 \001(\t\022\027\n\017current_serv" +
-      "ice\030\005 \001(\t\022\024\n\014next_service\030\006 \001(\t\022\017\n\007db_na" +
-      "me\030\007 \001(\t\022\022\n\ntable_name\030\010 \001(\t\022\017\n\007method1\030" +
-      "\t \001(\010\022\017\n\007method2\030\n \001(\010\022\r\n\005query\030\013 \001(\r\022$\n" +
-      "\004data\030\014 \003(\0132\026.HttpRequest.DataEntry\032+\n\tD" +
-      "ataEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001" +
-      "\"\037\n\014HttpResponse\022\017\n\007success\030\001 \001(\0102=\n\nCom" +
-      "monInfo\022/\n\020sendToDataCenter\022\014.HttpReques" +
-      "t\032\r.HttpResponseb\006proto3"
+      "(\t\022\024\n\014service_uuid\030\004 \001(\t\022\022\n\nmapper_num\030\005" +
+      " \001(\r\022\023\n\013service_num\030\006 \001(\r\022\017\n\007db_name\030\007 \001" +
+      "(\t\022\022\n\ntable_name\030\010 \001(\t\022\017\n\007method1\030\t \001(\010\022" +
+      "\017\n\007method2\030\n \001(\010\022\r\n\005query\030\013 \001(\t\022$\n\004data\030" +
+      "\014 \003(\0132\026.HttpRequest.DataEntry\032+\n\tDataEnt" +
+      "ry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\"\037\n\014Ht" +
+      "tpResponse\022\017\n\007success\030\001 \001(\0102=\n\nCommonInf" +
+      "o\022/\n\020sendToDataCenter\022\014.HttpRequest\032\r.Ht" +
+      "tpResponseb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2356,7 +2282,7 @@ public final class CommonInfoOuterClass {
     internal_static_HttpRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_HttpRequest_descriptor,
-        new String[] { "Online", "Pos", "TreeUuid", "LastService", "CurrentService", "NextService", "DbName", "TableName", "Method1", "Method2", "Query", "Data", });
+        new String[] { "Online", "Pos", "TreeUuid", "ServiceUuid", "MapperNum", "ServiceNum", "DbName", "TableName", "Method1", "Method2", "Query", "Data", });
     internal_static_HttpRequest_DataEntry_descriptor =
       internal_static_HttpRequest_descriptor.getNestedTypes().get(0);
     internal_static_HttpRequest_DataEntry_fieldAccessorTable = new

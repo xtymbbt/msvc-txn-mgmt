@@ -24,7 +24,7 @@ public class PaymentMapperImpl implements PaymentMapper {
     private int port;
 
     @Override
-    public void decrease(Long userId, BigDecimal money, UUID uuid, int pos, boolean isTheLastService) {
+    public void decrease(Long userId, BigDecimal money, UUID uuid, UUID serviceUUID, int mapperNum, int serviceNum, int pos) {
         String used = "+"+money;
         String residue = "-"+money;
         log.info("--->begin send to data center<---");
@@ -39,9 +39,9 @@ public class PaymentMapperImpl implements PaymentMapper {
         data.put("user_id", userId.toString());
         data.put("used", used);
         data.put("residue", residue);
-        boolean replay = client.sendToDataCenter(true, pos, uuid, "lastService",
-                "currentService", "nextService", "test_payment",
-                "payment", false, true, 0, data);
+        boolean replay = client.sendToDataCenter(true, pos, uuid,
+                serviceUUID, mapperNum, serviceNum, "test_payment",
+                "payment", false, true, "user_id", data);
         if (replay) {
             log.info("successfully sent to DataCenter at PORT:{}", port);
         } else {

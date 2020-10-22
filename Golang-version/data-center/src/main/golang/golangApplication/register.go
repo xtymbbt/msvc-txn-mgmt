@@ -3,9 +3,9 @@ package golangApplication
 import (
 	"../proto"
 	"google.golang.org/grpc"
-	"../controller"
+	"../server"
 )
 
 func register(s *grpc.Server) {
-	commonInfo.RegisterCommonInfoServer(s, &controller.Server{})
+	commonInfo.RegisterCommonInfoServer(s, &server.Server{})
 }

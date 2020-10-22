@@ -26,8 +26,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public void decrease(Long userId, BigDecimal money, UUID uuid, int pos) {
+        UUID serviceUUID = UUID.randomUUID();
         log.info("------>begin minus account<-----");
-        paymentMapper.decrease(userId, money, uuid, pos,true);
+        paymentMapper.decrease(userId, money, uuid, serviceUUID, 1, 0, pos);
         log.info("------>minus account ended<-----");
     }
 }
