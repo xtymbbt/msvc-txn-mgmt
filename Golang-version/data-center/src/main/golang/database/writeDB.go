@@ -21,14 +21,14 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 					return
 				}
 			} else {
-				err = dbDelete(dbx, data.TableName, data.Data)
+				err = dbDelete(dbx, data.TableName, data.Data, data.Query)
 				if err != nil {
 					return
 				}
 			}
 		} else {
 			if data.Method2 {
-				err = dbUpdate(dbx, data.TableName, data.Data)
+				err = dbUpdate(dbx, data.TableName, data.Data, data.Query)
 				if err != nil {
 					return
 				}
