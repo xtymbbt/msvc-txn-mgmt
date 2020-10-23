@@ -6,12 +6,12 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 101.201.121.145:1111
-  datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://101.201.121.145:3306/test_payment
-    username: root
-    password: Bupt_Bridge_Wang
+        server-addr: my.aliyun.com:1111
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://my.aliyun.com:3306/test_payment
+#    username: root
+#    password: password
 feign:
   hystrix:
     enabled: false
