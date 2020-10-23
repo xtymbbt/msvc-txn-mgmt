@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	DBNAME = []string{"seata_account", "seata_order", "seata_storage"}
+	DBNAME = []string{"test_order", "test_storage", "test_payment"}
 )
 
 

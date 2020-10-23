@@ -5,8 +5,7 @@ import (
 	"../database"
 	myErr "../error"
 	"../proto"
-	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -34,29 +33,37 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 	}
 
 	if canWrite(canWriteMap[message.TreeUuid], message.TreeUuid, msgMap[message.TreeUuid]) {
-		log.Println("message all received, writing into database...")
-		database.Write(hashMap[message.TreeUuid])
-		log.Println("write into database success, deleting caches...")
-		delete(hashMap, message.TreeUuid)
-		delete(canWriteMap, message.TreeUuid)
-		delete(numMap, message.TreeUuid)
-		delete(msgMap, message.TreeUuid)
-		log.Println("caches deleted.")
+		log.Info("message all received, writing into database...")
+		err = database.Write(hashMap[message.TreeUuid])
+		if err != nil {
+			log.Error("write into database failed, deleting caches...")
+		} else {
+			log.Info("write into database success, deleting caches...")
+		}
+		if _, ok := hashMap[message.TreeUuid]; ok {
+			delete(hashMap, message.TreeUuid)
+			delete(canWriteMap, message.TreeUuid)
+			delete(numMap, message.TreeUuid)
+			delete(msgMap, message.TreeUuid)
+			log.Info("caches deleted.")
+		} else {
+			log.Errorf("no caches found. cannot delete caches at TreeUUID: %s", message.TreeUuid)
+		}
 	}
 	return err
 }
 
 func timeOut(treeUuid string) (err error) {
 	time.Sleep(time.Second * config.TIMELAPSES)
-	log.Println("receiving message timed out, deleting caches...")
 	if _, ok := hashMap[treeUuid]; ok {
+		log.Error("receiving message timed out, deleting caches...")
 		delete(hashMap, treeUuid)
 		delete(canWriteMap, treeUuid)
 		delete(numMap, treeUuid)
 		delete(msgMap, treeUuid)
+		log.Info("caches deleted.")
+		err = myErr.NewError(300, "receive message timed out "+string(rune(config.TIMELAPSES))+" seconds.")
 	}
-	log.Println("caches deleted.")
-	err = myErr.NewError(300, "receive message timed out "+string(rune(config.TIMELAPSES))+" seconds.")
 	return
 }
 
@@ -92,7 +99,7 @@ func canWrite(canWriteMap map[uint32]map[string][]uint32, treeUuid string, msgNu
 		}
 		i++
 	}
-	fmt.Printf("numMap is: %#v\nmsgNum is %v\n", numMap, msgNum)
+	//fmt.Printf("numMap is: %#v\nmsgNum is %v\n", numMap, msgNum)
 	if numMap[treeUuid][0] == msgNum && numMap[treeUuid][1] == 0 {
 		return true
 	}
