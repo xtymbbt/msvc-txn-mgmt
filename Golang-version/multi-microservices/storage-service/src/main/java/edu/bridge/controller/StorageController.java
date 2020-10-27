@@ -3,7 +3,7 @@ package edu.bridge.controller;
 import edu.bridge.domain.CommonResult;
 import edu.bridge.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,7 +19,7 @@ public class StorageController {
     @Autowired
     private StorageService storageService;
 
-    @RequestMapping(value = "/storage/decrease")
+    @PostMapping(value = "/storage/decrease")
     public CommonResult decrease(@RequestParam("productId") Long productId,
                                  @RequestParam("count") Integer count,
                                  @RequestParam(value = "UUID", required = false) UUID globalTransactionUUID,

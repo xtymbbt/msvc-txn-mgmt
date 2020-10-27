@@ -15,6 +15,12 @@ spring:
 feign:
   hystrix:
     enabled: false
+  # feign调用超时时间配置
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 600000
 gRPC:
   host: 127.0.0.1
   port: 1996

@@ -1,0 +1,32 @@
+server:
+  port: 2002
+spring:
+  application:
+    name: seata-storage-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: my.aliyun.com:1111
+    alibaba:
+      seata:
+        tx-service-group: msvc_txn_mgmt_seata
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://my.aliyun.com:3306/seata_storage
+    username: root
+    password: Bupt_Bridge_Wang
+feign:
+  hystrix:
+    enabled: false
+  # feign调用超时时间配置
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 600000
+logging:
+  level:
+    io:
+      seata: info
+mybatis:
+  mapperLocations: classpath:mapper/*.xml

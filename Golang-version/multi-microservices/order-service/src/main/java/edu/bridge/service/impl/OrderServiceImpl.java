@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("----->order service called AccountService, minus ended.<------");
 
         log.info("----->starting modifying order<--------");
-        orderMapper.update(order.getUserId(), 0, uuid, pos, serviceUUID, mapperNum, serviceNum);
+        orderMapper.update(order.getUserId(), 1, uuid, pos, serviceUUID, mapperNum, serviceNum);
         log.info("----->modifying order ended<--------");
 
         log.info("----->ALL HAVE BEEN DONE!<------");
