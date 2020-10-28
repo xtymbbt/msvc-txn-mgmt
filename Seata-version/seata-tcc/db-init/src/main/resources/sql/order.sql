@@ -1,8 +1,8 @@
-drop database if exists `order`;
+drop database if exists `seata_tcc_order`;
 
-CREATE DATABASE `order` charset utf8;
+CREATE DATABASE `seata_tcc_order` charset utf8;
 
-use `order`;
+use `seata_tcc_order`;
 
 
 CREATE TABLE `order` (

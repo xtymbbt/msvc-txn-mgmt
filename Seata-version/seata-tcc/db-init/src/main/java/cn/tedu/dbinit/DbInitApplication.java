@@ -23,7 +23,7 @@ public class DbInitApplication {
 
     @PostConstruct
     public void init() throws SQLException {
-        exec(dataSource, "sql/account.sql");
+        exec(dataSource, "sql/payment.sql");
         exec(dataSource, "sql/storage.sql");
         exec(dataSource, "sql/order.sql");
         exec(dataSource, "sql/seata.sql");
