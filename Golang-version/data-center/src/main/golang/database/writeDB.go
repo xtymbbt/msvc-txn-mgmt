@@ -19,6 +19,7 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 
 func goWrite(data *commonInfo.HttpRequest, err *error){
 	mutex.Lock()
+	defer mutex.Unlock()
 	dbx := db[data.DbName]
 	/**
 	 * 根据data的两个method判断是增删改查的哪个操作
@@ -40,6 +41,5 @@ func goWrite(data *commonInfo.HttpRequest, err *error){
 			*err = dbQuery(dbx, data.TableName, data.Data)
 		}
 	}
-	mutex.Unlock()
 	wg.Done()
 }

@@ -19,6 +19,7 @@ var mutex sync.Mutex
 
 func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 	mutex.Lock()
+	defer mutex.Unlock()
 	if _, ok := hashMap[message.TreeUuid]; ok {
 		hashMap[message.TreeUuid] = append(hashMap[message.TreeUuid], message)
 		msgMap[message.TreeUuid]++
@@ -62,7 +63,6 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			log.Errorf("no caches found. cannot delete caches at TreeUUID: %s", message.TreeUuid)
 		}
 	}
-	mutex.Unlock()
 	return err
 }
 
@@ -82,7 +82,7 @@ func timeOut(treeUuid string, err *error){
 			delete(msgMap, treeUuid)
 			delete(timeMap, treeUuid)
 			log.Info("caches deleted.")
-			*err = myErr.NewError(300, "receive message timed out "+string(rune(config.TIMELAPSES))+" seconds.")
+			*err = myErr.NewError(300, "receive message timed out.")
 		}
 	}
 }
