@@ -12,7 +12,7 @@ import (
 
 var hashMap = make(map[string][]*commonInfo.HttpRequest, 0)
 var canWriteMap = make(map[string]map[uint32]map[string][]uint32, 0)
-var numMap = make(map[string][]int64, 0)
+var numMap = make(map[string][]int64, 0) // 这里如果只用现在的算法来说，可以不用map，但是目前这样定义是为了日后优化算法时更加方便。
 var msgMap = make(map[string]int64, 0)
 var timeMap = make(map[string]chan bool, 0)
 var mutex sync.Mutex
@@ -110,7 +110,7 @@ func canWrite(canWriteMap map[uint32]map[string][]uint32, treeUuid string, msgNu
 			)
 			for _, num := range canWriteMap[i] {
 				mapperNum += int64(num[0])
-				serviceNum += int64(num[1]) - 1
+				serviceNum += int64(num[1]) - 1  // 此处才是每一个被调用的service要调用的service个数，因此应当在此处减一
 			}
 			numMap[treeUuid][0] += mapperNum
 			numMap[treeUuid][1] += serviceNum
