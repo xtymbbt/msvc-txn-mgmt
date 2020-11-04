@@ -6,7 +6,7 @@ package config
 
 const (
 	PORT       = ":1996"
-	TIMELAPSES = 5
+	TIMELAPSES = 10
 	DBDriver   = "mysql"
 	DBUrl = "my.aliyun.com"
 	DBUser = "root"
