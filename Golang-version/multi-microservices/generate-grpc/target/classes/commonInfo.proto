@@ -11,7 +11,7 @@ message HttpRequest {
   string table_name = 8;
   bool method1 = 9;
   bool method2 = 10;
-  string query = 11;
+  string query = 11; // 若query有多个值，则使用","分隔开。
   map<string, string> data = 12;
 }
 

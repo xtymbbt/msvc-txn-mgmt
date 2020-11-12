@@ -87,10 +87,18 @@ public final class CommonInfoOuterClass {
     boolean getMethod2();
 
     /**
+     * <pre>
+     * 若query有多个值，则使用","分隔开。
+     * </pre>
+     *
      * <code>string query = 11;</code>
      */
     java.lang.String getQuery();
     /**
+     * <pre>
+     * 若query有多个值，则使用","分隔开。
+     * </pre>
+     *
      * <code>string query = 11;</code>
      */
     com.google.protobuf.ByteString
@@ -489,6 +497,10 @@ public final class CommonInfoOuterClass {
     public static final int QUERY_FIELD_NUMBER = 11;
     private volatile java.lang.Object query_;
     /**
+     * <pre>
+     * 若query有多个值，则使用","分隔开。
+     * </pre>
+     *
      * <code>string query = 11;</code>
      */
     public java.lang.String getQuery() {
@@ -504,6 +516,10 @@ public final class CommonInfoOuterClass {
       }
     }
     /**
+     * <pre>
+     * 若query有多个值，则使用","分隔开。
+     * </pre>
+     *
      * <code>string query = 11;</code>
      */
     public com.google.protobuf.ByteString
@@ -1539,6 +1555,10 @@ public final class CommonInfoOuterClass {
 
       private java.lang.Object query_ = "";
       /**
+       * <pre>
+       * 若query有多个值，则使用","分隔开。
+       * </pre>
+       *
        * <code>string query = 11;</code>
        */
       public java.lang.String getQuery() {
@@ -1554,6 +1574,10 @@ public final class CommonInfoOuterClass {
         }
       }
       /**
+       * <pre>
+       * 若query有多个值，则使用","分隔开。
+       * </pre>
+       *
        * <code>string query = 11;</code>
        */
       public com.google.protobuf.ByteString
@@ -1570,6 +1594,10 @@ public final class CommonInfoOuterClass {
         }
       }
       /**
+       * <pre>
+       * 若query有多个值，则使用","分隔开。
+       * </pre>
+       *
        * <code>string query = 11;</code>
        */
       public Builder setQuery(
@@ -1583,6 +1611,10 @@ public final class CommonInfoOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * 若query有多个值，则使用","分隔开。
+       * </pre>
+       *
        * <code>string query = 11;</code>
        */
       public Builder clearQuery() {
@@ -1592,6 +1624,10 @@ public final class CommonInfoOuterClass {
         return this;
       }
       /**
+       * <pre>
+       * 若query有多个值，则使用","分隔开。
+       * </pre>
+       *
        * <code>string query = 11;</code>
        */
       public Builder setQueryBytes(

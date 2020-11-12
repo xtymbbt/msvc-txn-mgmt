@@ -2,30 +2,29 @@ package database
 
 import (
 	"../proto"
+	"database/sql"
 	log "github.com/sirupsen/logrus"
-	"sync"
 )
 
-var wg sync.WaitGroup
-var mutex sync.RWMutex
-
-func Write(dataS []*commonInfo.HttpRequest) (err error) {
+func dbBackup(dataS []*commonInfo.HttpRequest) (err error) {
 	// 设置一个datacenter数据库，用于记录Backup的信息。0代表没有出现错误。1代表在主数据库写入时出现的错误，2代表在备份数据库写入时出现的错误
-	// 每次在写入之前，先更改数据库该backup值为1，在写入结束之后，更改数据库该backup值为0
-	log.Warn("WRITING INTO MAIN DATABASE...")
-	err = updateDataCenterDB(1)
+	// 每次在backup之前，先更改数据库该backup值为2，在backup结束之后，更改数据库该backup值为0
+	log.Warn("WRITING INTO BACKUP DATABASES...")
+	err = updateDataCenterDB(2)
 	if err != nil {
 		log.Fatalf("record datacenter state failed.\n" +
 			"error is: %#v\n" +
 			"Stopping datacenter...", err)
 	}
 	log.Info("Record Datacenter State succeeded.")
-	for _, data := range dataS {
-		wg.Add(1)
-		go goWrite(data, &err)
+	for _, database := range bakDBs {
+		for _, data := range dataS {
+			wg.Add(1)
+			go goBackup(data, database, &err)
+		}
 	}
 	wg.Wait()
-	log.Warn("WRITING INTO MAIN DATABASE SUCCEEDED.")
+	log.Warn("WRITING INTO BACKUP DATABASES SUCCEEDED.")
 	err = updateDataCenterDB(0)
 	if err != nil {
 		log.Fatalf("record datacenter state failed.\n" +
@@ -33,13 +32,12 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 			"Stopping datacenter...", err)
 	}
 	log.Info("Record Datacenter State succeeded.")
-	err = dbBackup(dataS)
-	return
+	return nil
 }
 
-func goWrite(data *commonInfo.HttpRequest, err *error){
+func goBackup(data *commonInfo.HttpRequest, database map[string]*sql.DB, err *error){
 	mutex.Lock()
-	dbx := mainDB[data.DbName]
+	dbx := database[data.DbName]
 	/**
 	 * 根据data的两个method判断是增删改查的哪个操作
 	 * true true = 增
