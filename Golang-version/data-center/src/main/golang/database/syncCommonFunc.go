@@ -2,6 +2,7 @@ package database
 
 import (
 	"../../../resources/config"
+	"../common"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"reflect"
@@ -98,7 +99,7 @@ func dropRduTabOrCreNewTab(srcDBTables, dnsDBTables map[string]bool, srcDB, dnsD
 }
 
 func queryDBData(db *sql.DB, resultMap *map[string][][]interface{}, tables map[string]bool) {
-	// TODO: Query DB's data and Record them into a map.
+	// Query DB's data and Record them into a map.
 	for k := range tables {
 		(*resultMap)[k] = make([][]interface{}, 0)
 		rows, err := db.Query("select * from `"+k+"`;")
@@ -152,5 +153,100 @@ func queryDBData(db *sql.DB, resultMap *map[string][][]interface{}, tables map[s
 }
 
 func compareAndUpdate(srcDBData, dnsDBData map[string][][]interface{}, srcDB, dnsDB *sql.DB, tables map[string]bool) {
-	// TODO: Compare src data with dnsDB's data. If not the same, update it.
+	// Compare src data with dnsDB's data. If not the same, update it.
+	for table := range tables {
+		breakOrNot := false
+		if len(srcDBData[table]) != len(dnsDBData[table]) {
+			// Drop dnsDB table & insert srcDBData into it.
+			dropAndInsert(srcDBData,srcDB, dnsDB, table)
+			continue
+		}
+		for i, values := range srcDBData[table] {
+			for j, value := range values {
+				if dnsDBData[table][i][j] == value {
+					continue
+				} else {
+					// Drop dnsDB table & insert srcDBData into it.
+					dropAndInsert(srcDBData,srcDB, dnsDB, table)
+					breakOrNot = true
+					break
+				}
+			}
+			if breakOrNot {
+				break
+			}
+		}
+	}
+}
+
+func dropAndInsert(srcDBData map[string][][]interface{}, srcDB *sql.DB, dnsDB *sql.DB, table string) {
+	// DROP dnsDB's  table
+	rowsInDrop, err := dnsDB.Query("drop table if exists `" + table+"`")
+	if err != nil {
+		log.Fatalf("Dropping table failed, error is: %v", err)
+	}
+	err = rowsInDrop.Close()
+	if err != nil {
+		log.Fatalf("Dropping table's query rows close failed, error is: %v", err)
+	}
+	// Create this table in dns database
+	// Step 1: Query from srcDB's table structure.
+	rowsInQuerySrcDB, err := srcDB.Query("show create table `"+table+"`")
+	if err != nil {
+		log.Errorf("Fetching from source database's table creating SQL code failed,error is: %v", err)
+		return
+	}
+
+	var noNeedVar string
+	var querySqlStr string
+	for rowsInQuerySrcDB.Next() {
+		err = rowsInQuerySrcDB.Scan(&noNeedVar,&querySqlStr)
+		if err != nil {
+			log.Fatalf("Scanning Creating SQL code failed, error is: %v", err)
+		}
+	}
+	err = rowsInQuerySrcDB.Close()
+	if err != nil {
+		log.Fatalf("Closing query source DB's rows failed, error is: %v", err)
+	}
+	// Step 2: Create this table in dnsDB
+	rowsInCreate, err := dnsDB.Query(querySqlStr)
+	if err != nil {
+		log.Fatalf("Creating table failed, error is: %v", err)
+	}
+	err = rowsInCreate.Close()
+	if err != nil {
+		log.Fatalf("Creating table's query rows close failed, error is: %v", err)
+	}
+
+	// Insert Data.
+	for _, oneData := range srcDBData[table] {
+		oneQuery := "insert into `"+table+"` "+"values ("
+		for _, datum := range oneData {
+			switch datum.(type) {
+			case string:
+				oneQuery += "'" + datum.(string) + "'" + ","
+			default:
+				oneQuery += common.StrVal(datum) + ","
+			}
+		}
+		oneQuery = oneQuery[:len(oneQuery)-1] + ")"
+		result, err := dnsDB.Exec(oneQuery)
+		log.Infof("sql string is: %s", oneQuery)
+		if err != nil {
+			log.Errorf("execute sql string failed, err is: %v", err)
+			return
+		}
+		id, err := result.LastInsertId()
+		if err != nil {
+			log.Errorf("Get last insert id failed, err: %v\n", err)
+			return
+		}
+		affected, err := result.RowsAffected()
+		if err != nil {
+			log.Errorf("Get affected rows failed, err: %v\n", err)
+			return
+		}
+		log.Infof("execute sql string succeeded, inserted id is: %v, affected rows: %v", id, affected)
+	}
 }

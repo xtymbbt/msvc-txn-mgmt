@@ -33,7 +33,7 @@ func initSync() (err error) {
 	// 若为2，则直接使用主数据库对从数据库进行同步。（2代表在从数据库写入的时候发生了错误）
 	//       此同步需要的是读取注数据库中所有的信息，与从数据库进行同步。
 	// 若程序在此步骤中崩溃，仍然无需更改backup的值，因为再重新启动的时候，我们仍需使用主数据库对从数据库进行同步。
-		log.Warn("Backup State is 1, executing vote sync...")
+		log.Warn("Backup State is 2, executing distribute sync...")
 		distributeSync()
 		log.Warn("Sync succeeded.")
 	default:
