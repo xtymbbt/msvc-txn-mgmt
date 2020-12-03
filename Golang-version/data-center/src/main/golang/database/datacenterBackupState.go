@@ -5,7 +5,10 @@ import (
 	"strconv"
 )
 
+var transactionState = -1
+
 func updateDataCenterDB(state int) (err error) {
+	transactionState = state
 	dbx := mainDB["data_center"]
 	sqlStr1 := "update `"+"backup"+"` set backup_state="+strconv.Itoa(state)
 	sqlStr2 := " where id=1"
