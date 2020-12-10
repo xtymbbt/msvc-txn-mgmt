@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func dbBackup(dataS []*commonInfo.HttpRequest) (err error) {
+func dbBackup(dataS []*commonInfo.HttpRequest, sqlStrS []string) (err error) {
 	// 设置一个datacenter数据库，用于记录Backup的信息。0代表没有出现错误。1代表在主数据库写入时出现的错误，2代表在备份数据库写入时出现的错误
 	// 每次在backup之前，先更改数据库该backup值为2，在backup结束之后，更改数据库该backup值为0
 	log.Warn("WRITING INTO BACKUP DATABASES...")
@@ -17,13 +17,28 @@ func dbBackup(dataS []*commonInfo.HttpRequest) (err error) {
 			"Stopping datacenter...", err)
 	}
 	log.Info("Record Datacenter State succeeded.")
+	//=====Deprecated======
+	//for _, database := range bakDBs {
+	//	for _, data := range dataS {
+	//		wg.Add(1)
+	//		go goBackup(data, database, &err)
+	//	}
+	//}
+	//wg.Wait()
+	//=========end=========
+	//=======new way=======
 	for _, database := range bakDBs {
-		for _, data := range dataS {
+		if dataS[0] != nil {
 			wg.Add(1)
-			go goBackup(data, database, &err)
+			go startDBTX(database[dataS[0].DbName], dataS, sqlStrS, &err)
 		}
 	}
 	wg.Wait()
+	if err != nil {
+		log.Fatalf("Executing Database Transaction failed.\n" +
+			"error is: %#v\n", err)
+	}
+	//=========end=========
 	log.Warn("WRITING INTO BACKUP DATABASES SUCCEEDED.")
 	err = updateDataCenterDB(0)
 	if err != nil {

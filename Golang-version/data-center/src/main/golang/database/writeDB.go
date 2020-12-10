@@ -20,11 +20,33 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 			"Stopping datacenter...", err)
 	}
 	log.Info("Record Datacenter State succeeded.")
-	for _, data := range dataS {
+	//=====Deprecated======
+	//for _, data := range dataS {
+	//	wg.Add(1)
+	//	go goWrite(data, &err)
+	//}
+	//=========end=========
+	//=======new way=======
+	sqlStrS := make([]string, len(dataS))
+	for i, data := range dataS {
 		wg.Add(1)
-		go goWrite(data, &err)
+		go goWriteTX(data, &sqlStrS[i], &err)
 	}
 	wg.Wait()
+	if err != nil {
+		log.Fatalf("Generate SQL str failed.\n" +
+			"error is: %#v\n", err)
+	}
+	if dataS[0] != nil {
+		wg.Add(1)
+		startDBTX(mainDB[dataS[0].DbName], dataS, sqlStrS, &err)
+		wg.Wait()
+		if err != nil {
+			log.Fatalf("Executing Database Transaction failed.\n" +
+				"error is: %#v\n", err)
+		}
+	}
+	//=========end=========
 	log.Warn("WRITING INTO MAIN DATABASE SUCCEEDED.")
 	err = updateDataCenterDB(0)
 	if err != nil {
@@ -33,8 +55,37 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 			"Stopping datacenter...", err)
 	}
 	log.Info("Record Datacenter State succeeded.")
-	err = dbBackup(dataS)
+	err = dbBackup(dataS, sqlStrS)
 	return
+}
+
+func goWriteTX(data *commonInfo.HttpRequest, sqlStr *string, err *error) {
+	/**
+	 * 根据data的两个method判断是增删改查的哪个操作
+	 * true true = 增
+	 * true false = 删
+	 * false true = 改
+	 * false false = 查
+	 */
+	if data.Method1 {
+		if data.Method2 {
+			*sqlStr, *err = dbInsertTX(data.TableName, data.Data)
+		} else {
+			*sqlStr, *err = dbDeleteTX(data.TableName, data.Data, data.Query)
+		}
+	} else {
+		if data.Method2 {
+			*sqlStr, *err = dbUpdateTX(data.TableName, data.Data, data.Query)
+		} else {
+			*sqlStr, *err = dbQueryTX(data.TableName, data.Data)
+		}
+	}
+	if *err != nil {
+		log.Fatalf("database write in failed.\n" +
+			"error is: %#v\n" +
+			"Stopping datacenter...", *err)
+	}
+	wg.Done()
 }
 
 func goWrite(data *commonInfo.HttpRequest, err *error){
