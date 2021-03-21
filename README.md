@@ -5,7 +5,7 @@ It contains these following directories.
 
 1 for proto buff test
 
-1 for seata version (for contrast)
+1 for seata version (for compare)
 
 1 for Golang version (my system's main program)
 
