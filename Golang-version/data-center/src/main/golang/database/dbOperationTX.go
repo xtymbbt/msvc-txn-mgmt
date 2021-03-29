@@ -123,5 +123,7 @@ func dbDeleteTX(tableName string, data map[string]string, query string) (sqlStr 
 }
 
 func dbQueryTX(tableName string, data map[string]string) (sqlStr string, err error) {
+	// Don't need query operation in transaction management.
+	// We recommend you to operate query operation in your own codes.
 	return
 }
