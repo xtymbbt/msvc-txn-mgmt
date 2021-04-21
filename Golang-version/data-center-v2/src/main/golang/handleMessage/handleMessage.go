@@ -4,30 +4,37 @@ import (
 	"../../../resources/config"
 	"../database"
 	myErr "../error"
-	"../proto"
+	"../proto/commonInfo"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
 )
 
+type TreeNode struct {
+	Name         string
+	ParentName   string
+	Parent       *TreeNode
+	ChildrenName map[string]bool
+	Children     []*TreeNode
+	Info         *commonInfo.HttpRequest
+}
+
 var (
-	hashMap     = make(map[string][]*commonInfo.HttpRequest, 0)
-	canWriteMap = make(map[string]map[uint32]map[string][]uint32, 0)
-	numMap      = make(map[string][]int64, 0) // 这里如果只用现在的算法来说，可以不用map，但是目前这样定义是为了日后优化算法时更加方便。
-	msgMap      = make(map[string]int64, 0)
-	timeMap     = make(map[string]chan bool, 0)
-	mutex       sync.RWMutex
+	timeMap       = make(map[string]chan bool, 0)
+	mutex         sync.RWMutex
+	receivedNodes = make(map[string]map[string]*TreeNode, 0)
+	tagged        = make(map[string]map[string]bool, 0)
+	untagged      = make(map[string]map[string]bool, 0)
 )
 
 func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 	if !message.Online {
 		log.Infof("Current Service %s is not online or available. Deleting caches...", message.ServiceUuid)
 		mutex.Lock()
-		if _, ok := hashMap[message.TreeUuid]; ok {
-			delete(hashMap, message.TreeUuid)
-			delete(canWriteMap, message.TreeUuid)
-			delete(numMap, message.TreeUuid)
-			delete(msgMap, message.TreeUuid)
+		if _, ok := receivedNodes[message.TreeUuid]; ok {
+			delete(receivedNodes, message.TreeUuid)
+			delete(tagged, message.TreeUuid)
+			delete(untagged, message.TreeUuid)
 			delete(timeMap, message.TreeUuid)
 			log.Info("caches deleted.")
 		} else {
@@ -38,32 +45,38 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 	}
 	mutex.Lock()
 	defer mutex.Unlock()
-	if _, ok := hashMap[message.TreeUuid]; ok {
-		hashMap[message.TreeUuid] = append(hashMap[message.TreeUuid], message)
-		msgMap[message.TreeUuid]++
-		if _, ok := canWriteMap[message.TreeUuid][message.Pos]; ok {
-			if _, ok := canWriteMap[message.TreeUuid][message.Pos][message.ServiceUuid]; !ok {
-				canWriteMap[message.TreeUuid][message.Pos][message.ServiceUuid] = []uint32{message.MapperNum, message.ServiceNum}
-			}
-		} else {
-			canWriteMap[message.TreeUuid][message.Pos] = map[string][]uint32{message.ServiceUuid: {message.MapperNum, message.ServiceNum}}
+	if _, ok := receivedNodes[message.TreeUuid]; ok {
+		currTreeNode := &TreeNode{
+			Name:         message.ServiceUuid,
+			ParentName:   message.ParentUuid,
+			ChildrenName: message.Children,
+			Info:         message,
 		}
+		addTreeNode(message.TreeUuid, currTreeNode)
 	} else {
-		hashMap[message.TreeUuid] = []*commonInfo.HttpRequest{message}
-		msgMap[message.TreeUuid] = 1
-		canWriteMap[message.TreeUuid] = map[uint32]map[string][]uint32{message.Pos: {message.ServiceUuid: []uint32{message.MapperNum, message.ServiceNum}}}
+		receivedNodes[message.TreeUuid] = make(map[string]*TreeNode, 0)
+		tagged[message.TreeUuid] = make(map[string]bool, 0)
+		untagged[message.TreeUuid] = make(map[string]bool, 0)
+		currTreeNode := &TreeNode{
+			Name:         message.ServiceUuid,
+			ParentName:   message.ParentUuid,
+			ChildrenName: message.Children,
+			Info:         message,
+		}
+		addTreeNode(message.TreeUuid, currTreeNode)
 		timeMap[message.TreeUuid] = make(chan bool, 1)
 		go timeOut(message.TreeUuid, &err)
 	}
 
-	if canWrite(canWriteMap[message.TreeUuid], message.TreeUuid, msgMap[message.TreeUuid]) {
+	if isCompleteTree(message.TreeUuid) {
 		log.Info("message all received, writing into database...")
 		if _, ok := timeMap[message.TreeUuid]; ok {
 			mutex.Lock()
 			timeMap[message.TreeUuid] <- true
 			mutex.Unlock()
 			mutex.RLock()
-			err = database.Write(hashMap[message.TreeUuid])
+			dataS := levelOrder(receivedNodes[message.TreeUuid]["root"])
+			err = database.Write(dataS)
 			mutex.RUnlock()
 			if err != nil {
 				log.Error("write into database failed, deleting caches...")
@@ -75,11 +88,10 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 		}
 		mutex.Lock()
 		defer mutex.Unlock()
-		if _, ok := hashMap[message.TreeUuid]; ok {
-			delete(hashMap, message.TreeUuid)
-			delete(canWriteMap, message.TreeUuid)
-			delete(numMap, message.TreeUuid)
-			delete(msgMap, message.TreeUuid)
+		if _, ok := receivedNodes[message.TreeUuid]; ok {
+			delete(receivedNodes, message.TreeUuid)
+			delete(tagged, message.TreeUuid)
+			delete(untagged, message.TreeUuid)
 			delete(timeMap, message.TreeUuid)
 			log.Info("caches deleted.")
 		} else {
@@ -100,11 +112,10 @@ func timeOut(treeUuid string, err *error) {
 		log.Error("receiving message timed out, deleting caches...")
 		mutex.Lock()
 		defer mutex.Unlock()
-		if _, ok := hashMap[treeUuid]; ok {
-			delete(hashMap, treeUuid)
-			delete(canWriteMap, treeUuid)
-			delete(numMap, treeUuid)
-			delete(msgMap, treeUuid)
+		if _, ok := receivedNodes[treeUuid]; ok {
+			delete(receivedNodes, treeUuid)
+			delete(tagged, treeUuid)
+			delete(untagged, treeUuid)
 			delete(timeMap, treeUuid)
 			log.Info("caches deleted.")
 			*err = myErr.NewError(300, "receive message timed out.")
@@ -112,41 +123,99 @@ func timeOut(treeUuid string, err *error) {
 	}
 }
 
-func canWrite(canWriteMap map[uint32]map[string][]uint32, treeUuid string, msgNum int64) bool {
-	if _, ok := canWriteMap[0]; !ok {
+func isCompleteTree(treeUUID string) bool {
+	if len(tagged) == 0 && len(untagged) == 0 {
 		return false
 	}
-	var (
-		mapperONum  int64 = 0
-		serviceONum int64 = 0
-	)
-	for _, num := range canWriteMap[0] {
-		mapperONum += int64(num[0])
-		serviceONum += int64(num[1])
-	}
-	//                          mapperNum, serviceNum
-	numMap[treeUuid] = []int64{mapperONum, serviceONum}
-	var i uint32 = 1
-	for {
-		if _, ok := canWriteMap[i]; ok {
-			var (
-				mapperNum  int64 = 0
-				serviceNum int64 = 0
-			)
-			for _, num := range canWriteMap[i] {
-				mapperNum += int64(num[0])
-				serviceNum += int64(num[1]) - 1 // 此处才是每一个被调用的service要调用的service个数，因此应当在此处减一
-			}
-			numMap[treeUuid][0] += mapperNum
-			numMap[treeUuid][1] += serviceNum
-		} else {
-			break
-		}
-		i++
-	}
-	//fmt.Printf("numMap is: %#v\nmsgNum is %v\n", numMap, msgNum)
-	if numMap[treeUuid][0] == msgNum && numMap[treeUuid][1] == 0 {
+	if _, ok := receivedNodes[treeUUID]["root"]; ok && len(untagged[treeUUID]) == 0 {
 		return true
 	}
 	return false
+}
+
+func addTreeNode(treeUUID string, node *TreeNode) {
+	if _, ok := receivedNodes[treeUUID][node.Name]; ok {
+		// ERROR!!!一个节点重复调用，不符合幂等性。
+		return
+	}
+	receivedNodes[treeUUID][node.Name] = node
+	if parent, ok := receivedNodes[treeUUID][node.ParentName]; ok {
+		if parent.Children == nil {
+			parent.Children = make([]*TreeNode, 0)
+		}
+		parent.Children = append(parent.Children, node)
+		node.Parent = parent
+		if judgeNode(parent) {
+			tagged[treeUUID][parent.Name] = true
+			if _, ok := untagged[treeUUID][parent.Name]; ok {
+				delete(untagged[treeUUID], parent.Name)
+			}
+		}
+	} else {
+		if node.ParentName != "" {
+			untagged[treeUUID][node.ParentName] = true
+		}
+	}
+	for name := range node.ChildrenName {
+		if child, ok := receivedNodes[treeUUID][name]; ok {
+			if node.Children == nil {
+				node.Children = make([]*TreeNode, 0)
+			}
+			node.Children = append(node.Children, child)
+			if child.Parent == nil {
+				child.Parent = node
+			}
+			if judgeNode(child) {
+				tagged[treeUUID][child.Name] = true
+				if _, ok := untagged[treeUUID][child.Name]; ok {
+					delete(untagged[treeUUID], child.Name)
+				}
+			}
+		} else {
+			untagged[treeUUID][name] = true
+		}
+	}
+	if judgeNode(node) {
+		tagged[treeUUID][node.Name] = true
+		if _, ok := untagged[treeUUID][node.Name]; ok {
+			delete(untagged[treeUUID], node.Name)
+		}
+	} else {
+		untagged[treeUUID][node.Name] = true
+	}
+}
+
+func judgeNode(node *TreeNode) bool {
+	if node.Name == "root" {
+		if node.Children == nil && node.ChildrenName == nil {
+			return true
+		}
+		return node.Children != nil &&
+			node.ChildrenName != nil &&
+			len(node.Children) == len(node.ChildrenName)
+	}
+	if node.Parent != nil && node.Children == nil && node.ChildrenName == nil {
+		return true
+	} else {
+		return node.Parent != nil &&
+			node.Children != nil &&
+			node.ChildrenName != nil &&
+			len(node.Children) == len(node.ChildrenName)
+	}
+}
+
+func levelOrder(root *TreeNode) []*commonInfo.HttpRequest {
+	result := make([]*commonInfo.HttpRequest, 0)
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
+	var tmp *TreeNode
+	for len(queue) != 0 {
+		tmp = queue[0]
+		queue = queue[1:]
+		for _, child := range tmp.Children {
+			queue = append(queue, child)
+		}
+		result = append(result, tmp.Info)
+	}
+	return result
 }

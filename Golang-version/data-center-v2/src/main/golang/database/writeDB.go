@@ -1,7 +1,7 @@
 package database
 
 import (
-	"../proto"
+	"../proto/commonInfo"
 	log "github.com/sirupsen/logrus"
 	"sync"
 )

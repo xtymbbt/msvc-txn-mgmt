@@ -2,7 +2,7 @@ package server
 
 import (
 	"../handleMessage"
-	"../proto"
+	"../proto/commonInfo"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 )

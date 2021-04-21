@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../proto"
+	"../proto/commonInfo"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"log"

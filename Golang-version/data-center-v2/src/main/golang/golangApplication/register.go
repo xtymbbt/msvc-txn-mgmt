@@ -1,7 +1,7 @@
 package golangApplication
 
 import (
-	"../proto"
+	"../proto/commonInfo"
 	"../server"
 	"google.golang.org/grpc"
 )
