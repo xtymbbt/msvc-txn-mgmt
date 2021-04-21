@@ -204,6 +204,7 @@ func judgeNode(node *TreeNode) bool {
 	}
 }
 
+// Through level order sort, we can have a correct SQL execute order.
 func levelOrder(root *TreeNode) []*commonInfo.HttpRequest {
 	result := make([]*commonInfo.HttpRequest, 0)
 	queue := make([]*TreeNode, 0)
