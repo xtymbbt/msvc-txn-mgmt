@@ -1,0 +1,7 @@
+edu\bridge\mapper\StorageMapperImpl.class
+edu\bridge\StorageApplication.class
+edu\bridge\domain\Storage.class
+edu\bridge\mapper\StorageMapper.class
+edu\bridge\service\StorageService.class
+edu\bridge\service\impl\StorageServiceImpl.class
+edu\bridge\controller\StorageController.class

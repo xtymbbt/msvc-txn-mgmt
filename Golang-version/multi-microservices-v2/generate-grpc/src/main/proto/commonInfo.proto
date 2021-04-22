@@ -1,0 +1,25 @@
+syntax = "proto3";
+option go_package ="./commonInfo";
+message HttpRequest {
+  bool online = 1;
+  string tree_uuid = 2;
+  string service_uuid = 3;
+  string parent_uuid = 4;
+  map<string, bool> children = 5;
+  string db_name = 6;
+  string table_name = 7;
+  bool method1 = 8;
+  bool method2 = 9;
+  string query = 10; // 若query有多个值，则使用","分隔开。
+  map<string, string> data = 11;
+}
+
+message HttpResponse {
+  bool success = 1;
+}
+
+service CommonInfo {
+  rpc sendToDataCenter (HttpRequest) returns (HttpResponse);
+}
+
+// java: mvn compile
