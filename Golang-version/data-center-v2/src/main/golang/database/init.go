@@ -75,9 +75,11 @@ func init() {
 	if err != nil {
 		log.Fatalf("init main database failed,\nerror is: %v\n", err)
 	}
-	err = initBackupDBs()
-	if err != nil {
-		log.Fatalf("init backup_databases failed,\nerror is: %v\n", err)
+	if config.EnableBKDB {
+		err = initBackupDBs()
+		if err != nil {
+			log.Fatalf("init backup_databases failed,\nerror is: %v\n", err)
+		}
 	}
 	err = initSync()
 	if err != nil {

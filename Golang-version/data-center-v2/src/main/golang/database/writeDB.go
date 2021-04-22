@@ -1,7 +1,9 @@
 package database
 
 import (
+	"../../../resources/config"
 	"../proto/commonInfo"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"sync"
 )
@@ -39,6 +41,7 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 	}
 	if dataS[0] != nil {
 		wg.Add(1)
+		fmt.Println(sqlStrS)
 		startDBTX(mainDB[dataS[0].DbName], dataS, sqlStrS, &err)
 		wg.Wait()
 		if err != nil {
@@ -55,7 +58,9 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 			"Stopping datacenter...", err)
 	}
 	log.Info("Record Datacenter State succeeded.")
-	err = dbBackup(dataS, sqlStrS)
+	if config.EnableBKDB {
+		err = dbBackup(dataS, sqlStrS)
+	}
 	return
 }
 

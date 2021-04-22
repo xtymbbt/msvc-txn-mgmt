@@ -18,6 +18,7 @@ const (
 	DBPassword    = "Bupt_Bridge_Wang"
 	DBMaxIdleConn = 16
 	DBMaxOpenConn = 100
+	EnableBKDB    = false
 )
 
 var (
@@ -25,9 +26,9 @@ var (
 
 	DBBakUrls = []string{
 		"127.0.0.1:3306",
-		"10.112.12.81:3306",
+		"10.112.175.91:3306",
 		"10.112.221.144:3306",
-		"10.112.196.254:3306",
+		"10.112.217.236:3306",
 	}
 	DBBakUsers = []string{
 		"root",

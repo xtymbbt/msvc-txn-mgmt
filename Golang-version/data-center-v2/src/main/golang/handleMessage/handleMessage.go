@@ -5,6 +5,7 @@ import (
 	"../database"
 	myErr "../error"
 	"../proto/commonInfo"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
@@ -44,7 +45,6 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 		return myErr.NewError(200, "Current Service "+message.ServiceUuid+" is not online or available.")
 	}
 	mutex.Lock()
-	defer mutex.Unlock()
 	if _, ok := receivedNodes[message.TreeUuid]; ok {
 		currTreeNode := &TreeNode{
 			Name:         message.ServiceUuid,
@@ -67,6 +67,7 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 		timeMap[message.TreeUuid] = make(chan bool, 1)
 		go timeOut(message.TreeUuid, &err)
 	}
+	mutex.Unlock()
 
 	if isCompleteTree(message.TreeUuid) {
 		log.Info("message all received, writing into database...")
@@ -75,9 +76,11 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			timeMap[message.TreeUuid] <- true
 			mutex.Unlock()
 			mutex.RLock()
-			dataS := levelOrder(receivedNodes[message.TreeUuid]["root"])
-			err = database.Write(dataS)
+			root := receivedNodes[message.TreeUuid]["root"]
 			mutex.RUnlock()
+			dataS := levelOrder(root)
+			fmt.Println(len(dataS))
+			err = database.Write(dataS)
 			if err != nil {
 				log.Error("write into database failed, deleting caches...")
 			} else {
@@ -87,7 +90,6 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			log.Error("current service chain already timed out. deleting caches...")
 		}
 		mutex.Lock()
-		defer mutex.Unlock()
 		if _, ok := receivedNodes[message.TreeUuid]; ok {
 			delete(receivedNodes, message.TreeUuid)
 			delete(tagged, message.TreeUuid)
@@ -97,6 +99,7 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 		} else {
 			log.Errorf("no caches found. cannot delete caches at TreeUUID: %s", message.TreeUuid)
 		}
+		mutex.Unlock()
 	}
 	return err
 }
