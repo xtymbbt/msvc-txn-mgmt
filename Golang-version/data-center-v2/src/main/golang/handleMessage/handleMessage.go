@@ -2,6 +2,7 @@ package handleMessage
 
 import (
 	"../../../resources/config"
+	"../common"
 	"../database"
 	myErr "../error"
 	"../proto/commonInfo"
@@ -10,19 +11,10 @@ import (
 	"time"
 )
 
-type TreeNode struct {
-	Name         string
-	ParentName   string
-	Parent       *TreeNode
-	ChildrenName map[string]bool
-	Children     []*TreeNode
-	Info         *commonInfo.HttpRequest
-}
-
 var (
 	timeMap       = make(map[string]chan bool, 0)
 	mutex         sync.RWMutex
-	receivedNodes = make(map[string]map[string]*TreeNode, 0)
+	receivedNodes = make(map[string]map[string]*common.TreeNode, 0)
 	tagged        = make(map[string]map[string]bool, 0)
 	untagged      = make(map[string]map[string]bool, 0)
 )
@@ -45,7 +37,7 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 	}
 	mutex.Lock()
 	if _, ok := receivedNodes[message.TreeUuid]; ok {
-		currTreeNode := &TreeNode{
+		currTreeNode := &common.TreeNode{
 			Name:         message.ServiceUuid,
 			ParentName:   message.ParentUuid,
 			ChildrenName: message.Children,
@@ -53,10 +45,10 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 		}
 		addTreeNode(message.TreeUuid, currTreeNode)
 	} else {
-		receivedNodes[message.TreeUuid] = make(map[string]*TreeNode, 0)
+		receivedNodes[message.TreeUuid] = make(map[string]*common.TreeNode, 0)
 		tagged[message.TreeUuid] = make(map[string]bool, 0)
 		untagged[message.TreeUuid] = make(map[string]bool, 0)
-		currTreeNode := &TreeNode{
+		currTreeNode := &common.TreeNode{
 			Name:         message.ServiceUuid,
 			ParentName:   message.ParentUuid,
 			ChildrenName: message.Children,
@@ -77,8 +69,7 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			mutex.RLock()
 			root := receivedNodes[message.TreeUuid]["root"]
 			mutex.RUnlock()
-			dataS := levelOrder(root)
-			err = database.Write(dataS)
+			err = database.Write(root)
 			if err != nil {
 				log.Error("write into database failed, deleting caches...")
 			} else {
@@ -112,7 +103,6 @@ func timeOut(treeUuid string, err *error) {
 	case <-time.After(time.Second * config.TIMELAPSES):
 		log.Error("receiving message timed out, deleting caches...")
 		mutex.Lock()
-		defer mutex.Unlock()
 		if _, ok := receivedNodes[treeUuid]; ok {
 			delete(receivedNodes, treeUuid)
 			delete(tagged, treeUuid)
@@ -121,6 +111,7 @@ func timeOut(treeUuid string, err *error) {
 			log.Info("caches deleted.")
 			*err = myErr.NewError(300, "receive message timed out.")
 		}
+		mutex.Unlock()
 	}
 }
 
@@ -134,7 +125,7 @@ func isCompleteTree(treeUUID string) bool {
 	return false
 }
 
-func addTreeNode(treeUUID string, node *TreeNode) {
+func addTreeNode(treeUUID string, node *common.TreeNode) {
 	if _, ok := receivedNodes[treeUUID][node.Name]; ok {
 		// ERROR!!!一个节点重复调用，不符合幂等性。
 		return
@@ -142,7 +133,7 @@ func addTreeNode(treeUUID string, node *TreeNode) {
 	receivedNodes[treeUUID][node.Name] = node
 	if parent, ok := receivedNodes[treeUUID][node.ParentName]; ok {
 		if parent.Children == nil {
-			parent.Children = make([]*TreeNode, 0)
+			parent.Children = make([]*common.TreeNode, 0)
 		}
 		parent.Children = append(parent.Children, node)
 		node.Parent = parent
@@ -160,7 +151,7 @@ func addTreeNode(treeUUID string, node *TreeNode) {
 	for name := range node.ChildrenName {
 		if child, ok := receivedNodes[treeUUID][name]; ok {
 			if node.Children == nil {
-				node.Children = make([]*TreeNode, 0)
+				node.Children = make([]*common.TreeNode, 0)
 			}
 			node.Children = append(node.Children, child)
 			if child.Parent == nil {
@@ -184,9 +175,10 @@ func addTreeNode(treeUUID string, node *TreeNode) {
 	} else {
 		untagged[treeUUID][node.Name] = true
 	}
+	database.GoWriteTX(node.Info, &node.SqlStr)
 }
 
-func judgeNode(node *TreeNode) bool {
+func judgeNode(node *common.TreeNode) bool {
 	if node.Name == "root" {
 		if node.Children == nil && node.ChildrenName == nil {
 			return true
@@ -206,11 +198,11 @@ func judgeNode(node *TreeNode) bool {
 }
 
 // Through level order sort, we can have a correct SQL execute order.
-func levelOrder(root *TreeNode) []*commonInfo.HttpRequest {
+func levelOrder(root *common.TreeNode) []*commonInfo.HttpRequest {
 	result := make([]*commonInfo.HttpRequest, 0)
-	queue := make([]*TreeNode, 0)
+	queue := make([]*common.TreeNode, 0)
 	queue = append(queue, root)
-	var tmp *TreeNode
+	var tmp *common.TreeNode
 	for len(queue) != 0 {
 		tmp = queue[0]
 		queue = queue[1:]

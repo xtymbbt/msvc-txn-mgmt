@@ -1,28 +1,33 @@
 package database
 
 import (
-	"../proto/commonInfo"
+	"../common"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
-func startDBTX(db *sql.DB, dataS []*commonInfo.HttpRequest, sqlStrS []string, err *error) {
-	if len(dataS) != len(sqlStrS) {
-		log.Errorf("Sql str length is not as equal to dataS length. Please check!")
-		return
-	}
+func startDBTX(db *sql.DB, root *common.TreeNode, err *error) {
 	tx, errx := db.Begin()
 	if errx != nil {
 		*err = errx
 		log.Errorf("Transaction Begin failed. err is: %#v\n", errx)
 		return
 	}
-	for i, data := range dataS {
-		rows, errx := tx.Query("use " + data.DbName)
+	// level order query to keep correct sql execute order.
+	queue := make([]*common.TreeNode, 0)
+	queue = append(queue, root)
+	var tmp *common.TreeNode
+	for len(queue) != 0 {
+		tmp = queue[0]
+		queue = queue[1:]
+		for _, child := range tmp.Children {
+			queue = append(queue, child)
+		}
+		rows, errx := tx.Query("use " + tmp.Info.DbName)
 		if errx != nil {
 			*err = errx
-			log.Errorf("Query: use "+data.DbName+" failed. err is: %#v\n", errx)
+			log.Errorf("Query: use "+tmp.Info.DbName+" failed. err is: %#v\n", errx)
 			return
 		}
 		errx = rows.Close()
@@ -31,10 +36,10 @@ func startDBTX(db *sql.DB, dataS []*commonInfo.HttpRequest, sqlStrS []string, er
 			log.Errorf("Rows close failed. err is: %#v\n", errx)
 			return
 		}
-		rows, errx = tx.Query(sqlStrS[i])
+		rows, errx = tx.Query(tmp.SqlStr)
 		if errx != nil {
 			*err = errx
-			log.Errorf("Query: "+sqlStrS[i]+" failed. err is: %#v\n", errx)
+			log.Errorf("Query: "+tmp.SqlStr+" failed. err is: %#v\n", errx)
 			return
 		}
 		errx = rows.Close()

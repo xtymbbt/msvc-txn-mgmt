@@ -1,12 +1,13 @@
 package database
 
 import (
+	"../common"
 	"../proto/commonInfo"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 )
 
-func dbBackup(dataS []*commonInfo.HttpRequest, sqlStrS []string) (err error) {
+func dbBackup(root *common.TreeNode) (err error) {
 	// 设置一个datacenter数据库，用于记录Backup的信息。0代表没有出现错误。1代表在主数据库写入时出现的错误，2代表在备份数据库写入时出现的错误
 	// 每次在backup之前，先更改数据库该backup值为2，在backup结束之后，更改数据库该backup值为0
 	log.Warn("WRITING INTO BACKUP DATABASES...")
@@ -28,12 +29,10 @@ func dbBackup(dataS []*commonInfo.HttpRequest, sqlStrS []string) (err error) {
 	//=========end=========
 	//=======new way=======
 	for _, database := range bakDBs {
-		if dataS[0] != nil {
-			wg.Add(1)
-			go startDBTX(database[dataS[0].DbName], dataS, sqlStrS, &err)
+		if root.Info != nil {
+			startDBTX(database[root.Info.DbName], root, &err)
 		}
 	}
-	wg.Wait()
 	if err != nil {
 		log.Fatalf("Executing Database Transaction failed.\n"+
 			"error is: %#v\n", err)
