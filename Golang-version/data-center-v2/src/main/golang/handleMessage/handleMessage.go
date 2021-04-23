@@ -5,7 +5,6 @@ import (
 	"../database"
 	myErr "../error"
 	"../proto/commonInfo"
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
@@ -79,7 +78,6 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			root := receivedNodes[message.TreeUuid]["root"]
 			mutex.RUnlock()
 			dataS := levelOrder(root)
-			fmt.Println(len(dataS))
 			err = database.Write(dataS)
 			if err != nil {
 				log.Error("write into database failed, deleting caches...")

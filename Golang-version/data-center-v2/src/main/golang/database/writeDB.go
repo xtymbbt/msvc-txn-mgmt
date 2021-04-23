@@ -2,6 +2,7 @@ package database
 
 import (
 	"../../../resources/config"
+	myErr "../error"
 	"../proto/commonInfo"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -40,13 +41,17 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 			"error is: %#v\n", err)
 	}
 	if dataS[0] != nil {
-		wg.Add(1)
 		fmt.Println(sqlStrS)
-		startDBTX(mainDB[dataS[0].DbName], dataS, sqlStrS, &err)
-		wg.Wait()
-		if err != nil {
-			log.Fatalf("Executing Database Transaction failed.\n"+
-				"error is: %#v\n", err)
+		err = myErr.NewError(200, "just for go into loop")
+		for err != nil {
+			err = nil
+			mutex.Lock()
+			startDBTX(mainDB[dataS[0].DbName], dataS, sqlStrS, &err)
+			mutex.Unlock()
+			if err != nil {
+				log.Errorf("Executing Database Transaction failed.\n"+
+					"error is: %#v\n", err)
+			}
 		}
 	}
 	//=========end=========
@@ -72,6 +77,7 @@ func goWriteTX(data *commonInfo.HttpRequest, sqlStr *string, err *error) {
 	 * false true = 改
 	 * false false = 查
 	 */
+	defer wg.Done()
 	if data.Method1 {
 		if data.Method2 {
 			*sqlStr, *err = dbInsertTX(data.TableName, data.Data)
@@ -90,7 +96,6 @@ func goWriteTX(data *commonInfo.HttpRequest, sqlStr *string, err *error) {
 			"error is: %#v\n"+
 			"Stopping datacenter...", *err)
 	}
-	wg.Done()
 }
 
 func goWrite(data *commonInfo.HttpRequest, err *error) {

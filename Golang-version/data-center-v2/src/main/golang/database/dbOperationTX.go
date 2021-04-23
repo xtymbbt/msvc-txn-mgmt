@@ -48,7 +48,6 @@ func startDBTX(db *sql.DB, dataS []*commonInfo.HttpRequest, sqlStrS []string, er
 	if *err != nil {
 		log.Errorf("Transaction Commit failed. err is: %#v\n", *err)
 	}
-	wg.Done()
 }
 
 func dbInsertTX(tableName string, data map[string]string) (sqlStr string, err error) {
