@@ -13,4 +13,5 @@ public class CommonRequestBody<T> {
     private UUID globalTransactionUUID;
     private String serviceUUID;
     private String parentUUID;
+    private String child;
 }

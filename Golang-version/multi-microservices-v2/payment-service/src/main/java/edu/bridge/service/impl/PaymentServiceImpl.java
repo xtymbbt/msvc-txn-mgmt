@@ -28,10 +28,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public void decrease(Long userId, BigDecimal money,
-                         CommonRequestBody commonRequestBody,
-                         String child) {
+                         CommonRequestBody commonRequestBody) {
         HashMap<String, Boolean> children = new HashMap<>();
-        if (child != null && !child.equals("")) children.put(child, true);
+        if (commonRequestBody.getChild() != null && !commonRequestBody.getChild().equals("")) {
+            children.put(commonRequestBody.getChild(), true);
+        }
         log.info("------>begin minus account<-----");
         paymentMapper.decrease(userId, money, commonRequestBody, children);
         log.info("------>minus account ended<-----");

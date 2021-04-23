@@ -25,12 +25,11 @@ public class StorageController {
     @PostMapping(value = "/storage/decrease")
     public CommonResult decrease(@RequestParam("productId") Long productId,
                                  @RequestParam("count") Integer count,
-                                 @RequestBody(required = false) CommonRequestBody commonRequestBody,
-                                 @RequestParam(value = "child", required = false) String child){
+                                 @RequestBody(required = false) CommonRequestBody commonRequestBody){
         if (commonRequestBody == null) {
-            commonRequestBody = new CommonRequestBody(UUID.randomUUID(), "root", "");
+            commonRequestBody = new CommonRequestBody(UUID.randomUUID(), "root", "", "");
         }
-        storageService.decrease(productId,count, commonRequestBody, child);
+        storageService.decrease(productId,count, commonRequestBody);
         return new CommonResult(200, "decrease storage succeeded!");
     }
 }

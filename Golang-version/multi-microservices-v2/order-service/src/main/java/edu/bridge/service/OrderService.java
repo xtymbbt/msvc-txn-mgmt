@@ -12,6 +12,5 @@ import java.util.UUID;
  * @date 2020/10/16 11:12
  */
 public interface OrderService {
-    void Create(Order order, CommonRequestBody commonRequestBody,
-                String child);
+    void Create(Order order, CommonRequestBody commonRequestBody);
 }

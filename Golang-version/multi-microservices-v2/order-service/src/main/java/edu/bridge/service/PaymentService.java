@@ -20,6 +20,5 @@ import java.util.UUID;
 public interface PaymentService {
     @PostMapping(value = "/payment/decrease")
     CommonResult decrease(@RequestParam("userId") Long userId, @RequestParam("money") BigDecimal money,
-                          @RequestBody(required = false) CommonRequestBody commonRequestBody,
-                          @RequestParam(value = "child", required = false) String child);
+                          @RequestBody(required = false) CommonRequestBody commonRequestBody);
 }

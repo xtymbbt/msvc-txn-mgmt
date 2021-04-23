@@ -15,6 +15,5 @@ import java.util.UUID;
 public interface PaymentService {
     void decrease(@RequestParam("userId") Long userId,
                   @RequestParam("money") BigDecimal money,
-                  CommonRequestBody commonRequestBody,
-                  String children);
+                  CommonRequestBody commonRequestBody);
 }

@@ -22,10 +22,11 @@ public class StorageServiceImpl implements StorageService {
     private StorageMapper storageMapper;
 
     @Override
-    public void decrease(Long productId, Integer count, CommonRequestBody commonRequestBody,
-                         String child) {
+    public void decrease(Long productId, Integer count, CommonRequestBody commonRequestBody) {
         HashMap<String, Boolean> children = new HashMap<>();
-        if (child != null && !child.equals("")) children.put(child, true);
+        if (commonRequestBody.getChild() != null && !commonRequestBody.getChild().equals("")) {
+            children.put(commonRequestBody.getChild(), true);
+        }
         log.info("------>begin minus storage<-----");
         storageMapper.decrease(productId, count, commonRequestBody, children);
         log.info("------>minus storage ended<-----");

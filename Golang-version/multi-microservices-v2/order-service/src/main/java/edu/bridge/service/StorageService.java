@@ -19,6 +19,5 @@ import java.util.UUID;
 public interface StorageService {
     @PostMapping(value = "/storage/decrease")
     CommonResult decrease(@RequestParam("productId") Long productId, @RequestParam("count") Integer count,
-                          @RequestBody(required = false)CommonRequestBody commonRequestBody,
-                          @RequestParam(value = "child", required = false) String child);
+                          @RequestBody(required = false)CommonRequestBody commonRequestBody);
 }

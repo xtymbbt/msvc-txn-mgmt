@@ -29,9 +29,11 @@ public class OrderServiceImpl implements OrderService {
     private PaymentService paymentService;
 
     @Override
-    public void Create(Order order, CommonRequestBody commonRequestBody, String child) {
+    public void Create(Order order, CommonRequestBody commonRequestBody) {
         HashMap<String, Boolean> children = new HashMap<>();
-        if (child != null && !child.equals("")) children.put(child, true);
+        if (commonRequestBody.getChild() != null && !commonRequestBody.getChild().equals("")) {
+            children.put(commonRequestBody.getChild(), true);
+        }
         children.put("storageService.decrease", true);
 
         log.info("----->starting creating order<--------");
@@ -42,7 +44,8 @@ public class OrderServiceImpl implements OrderService {
         children.remove(commonRequestBody.getServiceUUID());
         children.put("paymentService.decrease", true);
         log.info("----->order service beginning to call StorageService, minus count<-------");
-        storageService.decrease(order.getProductId(), order.getCount(), commonRequestBody, "paymentService.decrease");
+        commonRequestBody.setChild("paymentService.decrease");
+        storageService.decrease(order.getProductId(), order.getCount(), commonRequestBody);
         log.info("----->order service called StorageService, minus ended.<------");
 
         commonRequestBody.setParentUUID(commonRequestBody.getServiceUUID());
@@ -51,7 +54,8 @@ public class OrderServiceImpl implements OrderService {
         children.put("orderMapper.update", true);
         log.info("----->order service beginning to call AccountService, minus money.<------");
         log.info("userId:{}, money:{}", order.getUserId(), order.getMoney());
-        paymentService.decrease(order.getUserId(), order.getMoney(), commonRequestBody, "orderMapper.update");
+        commonRequestBody.setChild("orderMapper.update");
+        paymentService.decrease(order.getUserId(), order.getMoney(), commonRequestBody);
         log.info("----->order service called AccountService, minus ended.<------");
 
         commonRequestBody.setParentUUID(commonRequestBody.getServiceUUID());

@@ -26,12 +26,11 @@ public class OrderController {
 
     @GetMapping("/order/create")
     public CommonResult create(@RequestBody Order order,
-                               @RequestParam(required = false) CommonRequestBody commonRequestBody,
-                               @RequestParam(required = false) String child) {
+                               @RequestParam(required = false) CommonRequestBody commonRequestBody) {
         if (commonRequestBody == null) {
-            commonRequestBody = new CommonRequestBody(UUID.randomUUID(), "root", "");
+            commonRequestBody = new CommonRequestBody(UUID.randomUUID(), "root", "", "");
         }
-        orderService.Create(order, commonRequestBody, child);
+        orderService.Create(order, commonRequestBody);
         return new CommonResult(200, "Order create succeeded~");
     }
 }

@@ -26,12 +26,11 @@ public class PaymentController {
     @RequestMapping(value = "/payment/decrease")
     public CommonResult decrease(@RequestParam("userId") Long userId,
                                  @RequestParam("money") BigDecimal money,
-                                 @RequestBody(required = false) CommonRequestBody commonRequestBody,
-                                 @RequestParam(value = "child", required = false) String child) {
+                                 @RequestBody(required = false) CommonRequestBody commonRequestBody) {
         if (commonRequestBody == null) {
-            commonRequestBody = new CommonRequestBody(UUID.randomUUID(), "root", "");
+            commonRequestBody = new CommonRequestBody(UUID.randomUUID(), "root", "", "");
         }
-        paymentService.decrease(userId, money, commonRequestBody, child);
+        paymentService.decrease(userId, money, commonRequestBody);
         return new CommonResult(200, "success");
     }
 }
