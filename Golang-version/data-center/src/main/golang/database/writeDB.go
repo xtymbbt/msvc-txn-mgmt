@@ -15,8 +15,8 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 	log.Warn("WRITING INTO MAIN DATABASE...")
 	err = updateDataCenterDB(1)
 	if err != nil {
-		log.Fatalf("record datacenter state failed.\n" +
-			"error is: %#v\n" +
+		log.Fatalf("record datacenter state failed.\n"+
+			"error is: %#v\n"+
 			"Stopping datacenter...", err)
 	}
 	log.Info("Record Datacenter State succeeded.")
@@ -28,21 +28,25 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 	//=========end=========
 	//=======new way=======
 	sqlStrS := make([]string, len(dataS))
+	signalChan := make([]bool, 0, len(dataS))
+	//fmt.Println(len(signalChan))
 	for i, data := range dataS {
-		wg.Add(1)
-		go goWriteTX(data, &sqlStrS[i], &err)
+		go goWriteTX(data, &sqlStrS[i], &err, &signalChan)
 	}
-	wg.Wait()
+	//fmt.Println(len(signalChan))
+	for len(signalChan) != len(dataS) {
+		//fmt.Println(len(signalChan))
+	}
 	if err != nil {
-		log.Fatalf("Generate SQL str failed.\n" +
+		log.Fatalf("Generate SQL str failed.\n"+
 			"error is: %#v\n", err)
 	}
 	if dataS[0] != nil {
-		wg.Add(1)
+		mutex.Lock()
 		startDBTX(mainDB[dataS[0].DbName], dataS, sqlStrS, &err)
-		wg.Wait()
+		mutex.Unlock()
 		if err != nil {
-			log.Fatalf("Executing Database Transaction failed.\n" +
+			log.Fatalf("Executing Database Transaction failed.\n"+
 				"error is: %#v\n", err)
 		}
 	}
@@ -50,8 +54,8 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 	log.Warn("WRITING INTO MAIN DATABASE SUCCEEDED.")
 	err = updateDataCenterDB(0)
 	if err != nil {
-		log.Fatalf("record datacenter state failed.\n" +
-			"error is: %#v\n" +
+		log.Fatalf("record datacenter state failed.\n"+
+			"error is: %#v\n"+
 			"Stopping datacenter...", err)
 	}
 	log.Info("Record Datacenter State succeeded.")
@@ -59,7 +63,7 @@ func Write(dataS []*commonInfo.HttpRequest) (err error) {
 	return
 }
 
-func goWriteTX(data *commonInfo.HttpRequest, sqlStr *string, err *error) {
+func goWriteTX(data *commonInfo.HttpRequest, sqlStr *string, err *error, signalChan *[]bool) {
 	/**
 	 * 根据data的两个method判断是增删改查的哪个操作
 	 * true true = 增
@@ -81,14 +85,14 @@ func goWriteTX(data *commonInfo.HttpRequest, sqlStr *string, err *error) {
 		}
 	}
 	if *err != nil {
-		log.Fatalf("database write in failed.\n" +
-			"error is: %#v\n" +
+		log.Fatalf("database write in failed.\n"+
+			"error is: %#v\n"+
 			"Stopping datacenter...", *err)
 	}
-	wg.Done()
+	*signalChan = append(*signalChan, true)
 }
 
-func goWrite(data *commonInfo.HttpRequest, err *error){
+func goWrite(data *commonInfo.HttpRequest, err *error) {
 	mutex.Lock()
 	dbx := mainDB[data.DbName]
 	/**
@@ -112,8 +116,8 @@ func goWrite(data *commonInfo.HttpRequest, err *error){
 		}
 	}
 	if *err != nil {
-		log.Fatalf("database write in failed.\n" +
-			"error is: %#v\n" +
+		log.Fatalf("database write in failed.\n"+
+			"error is: %#v\n"+
 			"Stopping datacenter...", *err)
 	}
 	mutex.Unlock()
