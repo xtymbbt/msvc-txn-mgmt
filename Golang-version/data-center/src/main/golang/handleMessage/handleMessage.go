@@ -9,13 +9,14 @@ import (
 	"sync"
 	"time"
 )
+
 var (
-	hashMap = make(map[string][]*commonInfo.HttpRequest, 0)
-    canWriteMap = make(map[string]map[uint32]map[string][]uint32, 0)
-    numMap = make(map[string][]int64, 0) // 这里如果只用现在的算法来说，可以不用map，但是目前这样定义是为了日后优化算法时更加方便。
-    msgMap = make(map[string]int64, 0)
-    timeMap = make(map[string]chan bool, 0)
-    mutex sync.RWMutex
+	hashMap     = make(map[string][]*commonInfo.HttpRequest, 0)
+	canWriteMap = make(map[string]map[uint32]map[string][]uint32, 0)
+	numMap      = make(map[string][]int64, 0) // 这里如果只用现在的算法来说，可以不用map，但是目前这样定义是为了日后优化算法时更加方便。
+	msgMap      = make(map[string]int64, 0)
+	timeMap     = make(map[string]chan bool, 0)
+	mutex       sync.RWMutex
 )
 
 func HandleMessage(message *commonInfo.HttpRequest) (err error) {
@@ -36,7 +37,6 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 		return myErr.NewError(200, "Current Service "+message.ServiceUuid+" is not online or available.")
 	}
 	mutex.Lock()
-	defer mutex.Unlock()
 	if _, ok := hashMap[message.TreeUuid]; ok {
 		hashMap[message.TreeUuid] = append(hashMap[message.TreeUuid], message)
 		msgMap[message.TreeUuid]++
@@ -54,7 +54,7 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 		timeMap[message.TreeUuid] = make(chan bool, 1)
 		go timeOut(message.TreeUuid, &err)
 	}
-
+	mutex.Unlock()
 
 	if canWrite(canWriteMap[message.TreeUuid], message.TreeUuid, msgMap[message.TreeUuid]) {
 		log.Info("message all received, writing into database...")
@@ -63,8 +63,9 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			timeMap[message.TreeUuid] <- true
 			mutex.Unlock()
 			mutex.RLock()
-			err = database.Write(hashMap[message.TreeUuid])
+			dataS := hashMap[message.TreeUuid]
 			mutex.RUnlock()
+			err = database.Write(dataS)
 			if err != nil {
 				log.Error("write into database failed, deleting caches...")
 			} else {
@@ -74,7 +75,6 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			log.Error("current service chain already timed out. deleting caches...")
 		}
 		mutex.Lock()
-		defer mutex.Unlock()
 		if _, ok := hashMap[message.TreeUuid]; ok {
 			delete(hashMap, message.TreeUuid)
 			delete(canWriteMap, message.TreeUuid)
@@ -85,21 +85,21 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 		} else {
 			log.Errorf("no caches found. cannot delete caches at TreeUUID: %s", message.TreeUuid)
 		}
+		mutex.Unlock()
 	}
 	return err
 }
 
-func timeOut(treeUuid string, err *error){
+func timeOut(treeUuid string, err *error) {
 	mutex.RLock()
 	timeChan := timeMap[treeUuid]
 	mutex.RUnlock()
 	select {
-	case <- timeChan:
+	case <-timeChan:
 		log.Info("receiving message succeeded, timeOut function stopped, writing into database.")
-	case <- time.After(time.Second * config.TIMELAPSES):
+	case <-time.After(time.Second * config.TIMELAPSES):
 		log.Error("receiving message timed out, deleting caches...")
 		mutex.Lock()
-		defer mutex.Unlock()
 		if _, ok := hashMap[treeUuid]; ok {
 			delete(hashMap, treeUuid)
 			delete(canWriteMap, treeUuid)
@@ -109,6 +109,7 @@ func timeOut(treeUuid string, err *error){
 			log.Info("caches deleted.")
 			*err = myErr.NewError(300, "receive message timed out.")
 		}
+		mutex.Unlock()
 	}
 }
 
@@ -135,7 +136,7 @@ func canWrite(canWriteMap map[uint32]map[string][]uint32, treeUuid string, msgNu
 			)
 			for _, num := range canWriteMap[i] {
 				mapperNum += int64(num[0])
-				serviceNum += int64(num[1]) - 1  // 此处才是每一个被调用的service要调用的service个数，因此应当在此处减一
+				serviceNum += int64(num[1]) - 1 // 此处才是每一个被调用的service要调用的service个数，因此应当在此处减一
 			}
 			numMap[treeUuid][0] += mapperNum
 			numMap[treeUuid][1] += serviceNum

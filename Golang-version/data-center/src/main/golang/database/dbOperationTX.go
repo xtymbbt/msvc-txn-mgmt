@@ -48,18 +48,17 @@ func startDBTX(db *sql.DB, dataS []*commonInfo.HttpRequest, sqlStrS []string, er
 	if *err != nil {
 		log.Errorf("Transaction Commit failed. err is: %#v\n", *err)
 	}
-	wg.Done()
 }
 
 func dbInsertTX(tableName string, data map[string]string) (sqlStr string, err error) {
-	sqlStr1 := "insert into `"+tableName+"` ("
+	sqlStr1 := "insert into `" + tableName + "` ("
 	sqlStr2 := ") values ("
 	for key, value := range data {
-		sqlStr1 += key+", "
-		sqlStr2 += value+", "
+		sqlStr1 += key + ", "
+		sqlStr2 += value + ", "
 	}
 	sqlStr1 = sqlStr1[:len(sqlStr1)-2]
-	sqlStr2 = sqlStr2[:len(sqlStr2)-2]+");"
+	sqlStr2 = sqlStr2[:len(sqlStr2)-2] + ");"
 	sqlStr = sqlStr1 + sqlStr2
 	log.Debugf("sql string is: %s", sqlStr)
 	return
@@ -71,7 +70,7 @@ func dbUpdateTX(tableName string, data map[string]string, query string) (sqlStr 
 	for i, s := range queryStr {
 		queryMap[s] = i
 	}
-	sqlStr1 := "update `"+tableName+"` set "
+	sqlStr1 := "update `" + tableName + "` set "
 	sqlStr2 := " where "
 	for key, value := range data {
 		if _, ok := queryMap[key]; ok {
@@ -79,30 +78,30 @@ func dbUpdateTX(tableName string, data map[string]string, query string) (sqlStr 
 			continue
 		}
 		if len(value) == 0 {
-			sqlStr1 += key+"="+key+value+","
+			sqlStr1 += key + "=" + key + value + ","
 			continue
 		}
 		switch value[0] {
 		case '+':
-			sqlStr1 += key+"="+key+value+","
+			sqlStr1 += key + "=" + key + value + ","
 		case '-':
-			sqlStr1 += key+"="+key+value+","
+			sqlStr1 += key + "=" + key + value + ","
 		case '×':
-			sqlStr1 += key+"="+key+"*"+value[1:]+","
+			sqlStr1 += key + "=" + key + "*" + value[1:] + ","
 		case '*':
-			sqlStr1 += key+"="+key+value+","
+			sqlStr1 += key + "=" + key + value + ","
 		case '÷':
-			sqlStr1 += key+"="+key+"/"+value[1:]+","
+			sqlStr1 += key + "=" + key + "/" + value[1:] + ","
 		case '/':
-			sqlStr1 += key+"="+key+value+","
+			sqlStr1 += key + "=" + key + value + ","
 		case '=':
-			sqlStr1 += key+value+","
+			sqlStr1 += key + value + ","
 		default:
-			sqlStr1 += key+"="+value+","
+			sqlStr1 += key + "=" + value + ","
 		}
 	}
 	sqlStr1 = sqlStr1[:len(sqlStr1)-1]
-	sqlStr2 = sqlStr2[:len(sqlStr2)-5]+";"
+	sqlStr2 = sqlStr2[:len(sqlStr2)-5] + ";"
 	sqlStr = sqlStr1 + sqlStr2
 	log.Debugf("sql string is: %s", sqlStr)
 	return
@@ -110,13 +109,13 @@ func dbUpdateTX(tableName string, data map[string]string, query string) (sqlStr 
 
 func dbDeleteTX(tableName string, data map[string]string, query string) (sqlStr string, err error) {
 	queryStr := strings.Split(query, ",")
-	sqlStr1 := "delete from `"+tableName+"` "
+	sqlStr1 := "delete from `" + tableName + "` "
 	sqlStr2 := " where "
 	for _, s := range queryStr {
 		sqlStr2 += s + "=" + data[s] + " and "
 	}
 	sqlStr1 = sqlStr1[:len(sqlStr1)-1]
-	sqlStr2 = sqlStr2[:len(sqlStr2)-5]+";"
+	sqlStr2 = sqlStr2[:len(sqlStr2)-5] + ";"
 	sqlStr = sqlStr1 + sqlStr2
 	log.Debugf("sql string is: %s", sqlStr)
 	return

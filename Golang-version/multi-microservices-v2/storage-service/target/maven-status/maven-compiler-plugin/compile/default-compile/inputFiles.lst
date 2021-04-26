@@ -1,7 +1,7 @@
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\storage-service\src\main\java\edu\bridge\domain\Storage.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\storage-service\src\main\java\edu\bridge\mapper\StorageMapper.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\storage-service\src\main\java\edu\bridge\mapper\StorageMapperImpl.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\storage-service\src\main\java\edu\bridge\service\StorageService.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\storage-service\src\main\java\edu\bridge\StorageApplication.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\storage-service\src\main\java\edu\bridge\controller\StorageController.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\storage-service\src\main\java\edu\bridge\service\impl\StorageServiceImpl.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\storage-service\src\main\java\edu\bridge\mapper\StorageMapper.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\storage-service\src\main\java\edu\bridge\domain\Storage.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\storage-service\src\main\java\edu\bridge\service\StorageService.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\storage-service\src\main\java\edu\bridge\controller\StorageController.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\storage-service\src\main\java\edu\bridge\service\impl\StorageServiceImpl.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\storage-service\src\main\java\edu\bridge\StorageApplication.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\storage-service\src\main\java\edu\bridge\mapper\StorageMapperImpl.java

@@ -1,6 +1,6 @@
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\payment-service\src\main\java\edu\bridge\mapper\PaymentMapperImpl.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\payment-service\src\main\java\edu\bridge\PaymentApplication.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\payment-service\src\main\java\edu\bridge\service\PaymentService.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\payment-service\src\main\java\edu\bridge\controller\PaymentController.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\payment-service\src\main\java\edu\bridge\service\impl\PaymentServiceImpl.java
-D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices\payment-service\src\main\java\edu\bridge\mapper\PaymentMapper.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\payment-service\src\main\java\edu\bridge\controller\PaymentController.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\payment-service\src\main\java\edu\bridge\mapper\PaymentMapperImpl.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\payment-service\src\main\java\edu\bridge\service\PaymentService.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\payment-service\src\main\java\edu\bridge\mapper\PaymentMapper.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\payment-service\src\main\java\edu\bridge\PaymentApplication.java
+D:\GitHub\msvc-txn-mgmt\Golang-version\multi-microservices-v2\payment-service\src\main\java\edu\bridge\service\impl\PaymentServiceImpl.java
