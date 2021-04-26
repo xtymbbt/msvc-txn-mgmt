@@ -1,6 +1,7 @@
 package database
 
 import (
+	"data-center-v2/config"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -26,14 +27,30 @@ func initSync() (err error) {
 		// 若程序在此步骤中崩溃，由于是采用的多数投票方式进行同步，而多数的数据库不会被更改，只有少数的数据库需要被更改
 		// 因此，我们不需要修改该backup的值。因为若崩溃了，我们仍需要采用多数投票的方式进行同步。
 		log.Warn("Backup State is 1, executing vote sync...")
-		voteSync()
+		if config.EnableBKDB {
+			voteSync()
+		} else {
+			log.Warn("You didn't enable backup database. Changing backup state...")
+			err = updateDataCenterDB(0)
+			if err != nil {
+				log.Fatalf("Update backup state failed. Error is: %#v", err)
+			}
+		}
 		log.Warn("Sync succeeded.")
 	case 2:
 		// 若为2，则直接使用主数据库对从数据库进行同步。（2代表在从数据库写入的时候发生了错误）
 		//       此同步需要的是读取注数据库中所有的信息，与从数据库进行同步。
 		// 若程序在此步骤中崩溃，仍然无需更改backup的值，因为再重新启动的时候，我们仍需使用主数据库对从数据库进行同步。
 		log.Warn("Backup State is 2, executing distribute sync...")
-		distributeSync()
+		if config.EnableBKDB {
+			distributeSync()
+		} else {
+			log.Warn("You didn't enable backup database. Changing backup state...")
+			err = updateDataCenterDB(0)
+			if err != nil {
+				log.Fatalf("Update backup state failed. Error is: %#v", err)
+			}
+		}
 		log.Warn("Sync succeeded.")
 	default:
 		log.Fatalf("Backup State is neither 0 or 1 or 2, init failed. Please check your database and your program logs.")
