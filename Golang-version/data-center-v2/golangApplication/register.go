@@ -1,8 +1,8 @@
 package golangApplication
 
 import (
-	"../proto/commonInfo"
-	"../server"
+	"data-center-v2/proto/commonInfo"
+	"data-center-v2/server"
 	"google.golang.org/grpc"
 )
 

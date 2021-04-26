@@ -3,6 +3,7 @@ package config
 import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"time"
 )
 
 /**
@@ -15,8 +16,8 @@ used to config servers.
 */
 
 var (
-	PORT           string
-	TIMELAPSES     int
+	PORT           int
+	TIMELAPSES     time.Duration
 	DBDriver       string
 	DBUrl          string
 	DBUser         string
@@ -31,7 +32,7 @@ var (
 )
 
 func initDefaultValue() {
-	viper.SetConfigFile("application")
+	viper.SetConfigFile("application.yml")
 	viper.SetConfigType("yml")
 	viper.AddConfigPath(".")
 	if err := viper.ReadInConfig(); err != nil {
@@ -44,8 +45,8 @@ func initDefaultValue() {
 		}
 	}
 	app := viper.Sub("app")
-	PORT = ":" + app.GetString("port")
-	TIMELAPSES = app.GetInt("timelapses")
+	PORT = app.GetInt("port")
+	TIMELAPSES = time.Second * time.Duration(app.GetInt("timelapses"))
 
 	dbConf := viper.Sub("database")
 	DBDriver = dbConf.GetString("driver")

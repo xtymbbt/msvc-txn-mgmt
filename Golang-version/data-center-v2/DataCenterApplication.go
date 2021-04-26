@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./golangApplication"
+	"data-center-v2/golangApplication"
 )
 
 func main() {

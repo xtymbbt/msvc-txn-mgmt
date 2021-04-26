@@ -1,8 +1,8 @@
 package database
 
 import (
-	"../config"
-	myErr "../error"
+	"data-center-v2/config"
+	myErr "data-center-v2/error"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql" // init mysql driver
 	log "github.com/sirupsen/logrus"

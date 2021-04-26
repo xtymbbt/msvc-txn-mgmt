@@ -1,8 +1,8 @@
 package database
 
 import (
-	"../common"
-	"../config"
+	"data-center-v2/common"
+	"data-center-v2/config"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"reflect"

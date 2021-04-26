@@ -1,8 +1,8 @@
 package database
 
 import (
-	"../common"
-	"../proto/commonInfo"
+	"data-center-v2/common"
+	"data-center-v2/proto/commonInfo"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 )

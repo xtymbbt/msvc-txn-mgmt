@@ -1,8 +1,8 @@
 package server
 
 import (
-	"../handleMessage"
-	"../proto/commonInfo"
+	"data-center-v2/handleMessage"
+	"data-center-v2/proto/commonInfo"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 )

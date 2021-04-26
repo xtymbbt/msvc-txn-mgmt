@@ -1,11 +1,11 @@
 package handleMessage
 
 import (
-	"../common"
-	"../config"
-	"../database"
-	myErr "../error"
-	"../proto/commonInfo"
+	"data-center-v2/common"
+	"data-center-v2/config"
+	"data-center-v2/database"
+	myErr "data-center-v2/error"
+	"data-center-v2/proto/commonInfo"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
@@ -100,7 +100,7 @@ func timeOut(treeUuid string, err *error) {
 	select {
 	case <-timeChan:
 		log.Info("receiving message succeeded, timeOut function stopped, writing into database.")
-	case <-time.After(time.Second * config.TIMELAPSES):
+	case <-time.After(config.TIMELAPSES):
 		log.Error("receiving message timed out, deleting caches...")
 		mutex.Lock()
 		if _, ok := receivedNodes[treeUuid]; ok {

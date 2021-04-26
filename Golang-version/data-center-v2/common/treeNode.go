@@ -1,6 +1,6 @@
 package common
 
-import "../proto/commonInfo"
+import "data-center-v2/proto/commonInfo"
 
 type TreeNode struct {
 	Name         string
