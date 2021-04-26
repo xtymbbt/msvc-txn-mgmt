@@ -11,7 +11,7 @@ import (
 )
 
 func Run() {
-	lis, err := net.Listen("tcp", strconv.Itoa(config.PORT))
+	lis, err := net.Listen("tcp", ":"+strconv.Itoa(config.PORT))
 	if err != nil {
 		log.Fatalf("DataCenterApplication failed to listen at PORT : %d.\nerror is:\n%v\n", config.PORT, err)
 	}

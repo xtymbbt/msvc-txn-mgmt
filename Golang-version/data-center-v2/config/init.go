@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
@@ -9,23 +8,6 @@ import (
 func init() {
 	initDefaultValue()
 	initLog()
-	printv()
-}
-
-func printv() {
-	fmt.Println("PORT", PORT)
-	fmt.Println("TIMELAPSES", TIMELAPSES)
-	fmt.Println("DBDriver", DBDriver)
-	fmt.Println("DBUrl", DBUrl)
-	fmt.Println("DBUser", DBUser)
-	fmt.Println("DBPassword", DBPassword)
-	fmt.Println("DBMaxIdleConn", DBMaxIdleConn)
-	fmt.Println("DBMaxOpenConn", DBMaxOpenConn)
-	fmt.Println("EnableBKDB", EnableBKDB)
-	fmt.Println("DBNAME", DBNAME)
-	fmt.Println("DBBakUrls", DBBakUrls)
-	fmt.Println("DBBakUsers", DBBakUsers)
-	fmt.Println("DBBakPasswords", DBBakPasswords)
 }
 
 // init log config

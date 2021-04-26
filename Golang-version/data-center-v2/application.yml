@@ -12,9 +12,9 @@ database:
   max_idle_connection: 16
   max_open_connection: 100
   main:
-    url: "127.0.0.1:3306"
+    url: "my.aliyun.com:3306"
     user: "root"
-    password: "root123456"
+    password: "Bupt_Bridge_Wang"
   slaves:
     urls:
       - "10.112.221.144:3306"
