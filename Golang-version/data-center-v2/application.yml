@@ -17,11 +17,17 @@ database:
     password: "Bupt_Bridge_Wang"
   slaves:
     urls:
+      - "127.0.0.1:3306"
+      - "10.112.175.91:3306"
       - "10.112.221.144:3306"
       - "10.112.217.236:3306"
     users:
       - "root"
       - "root"
+      - "root"
+      - "root"
     passwords:
+      - "123456"
+      - "root123456"
       - "123456"
       - "123456"
