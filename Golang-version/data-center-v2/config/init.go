@@ -5,8 +5,13 @@ import (
 	"os"
 )
 
-// init log config
 func init() {
+	initDefaultValue()
+	initLog()
+}
+
+// init log config
+func initLog() {
 	// Log as JSON instead of the default ASCII formatter.
 	log.SetFormatter(&log.TextFormatter{
 		ForceColors:               true,

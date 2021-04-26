@@ -1,8 +1,8 @@
 package database
 
 import (
-	"../../../resources/config"
 	"../common"
+	"../config"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"reflect"

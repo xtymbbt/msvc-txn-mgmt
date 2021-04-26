@@ -1,8 +1,8 @@
 package handleMessage
 
 import (
-	"../../../resources/config"
 	"../common"
+	"../config"
 	"../database"
 	myErr "../error"
 	"../proto/commonInfo"

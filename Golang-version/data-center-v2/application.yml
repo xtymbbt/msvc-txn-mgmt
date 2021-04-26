@@ -1,0 +1,33 @@
+app:
+  port: 1996
+  timelapses: 50
+
+database:
+  driver: "mysql"
+  database_names:
+    - "test_order"
+    - "test_storage"
+    - "test_payment"
+  enable_slave_database: false
+  max_idle_connection: 16
+  max_open_connection: 100
+  main:
+    url: "my.aliyun.com:3306"
+    user: "root"
+    password: "Bupt_Bridge_Wang"
+  slaves:
+    urls:
+      - "127.0.0.1:3306"
+      - "10.112.175.91:3306"
+      - "10.112.221.144:3306"
+      - "10.112.217.236:3306"
+    users:
+      - "root"
+      - "root"
+      - "root"
+      - "root"
+    passwords:
+      - "123456"
+      - "root123456"
+      - "123456"
+      - "123456"

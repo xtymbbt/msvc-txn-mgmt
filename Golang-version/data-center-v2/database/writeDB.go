@@ -1,8 +1,8 @@
 package database
 
 import (
-	"../../../resources/config"
 	"../common"
+	"../config"
 	"../proto/commonInfo"
 	log "github.com/sirupsen/logrus"
 	"sync"

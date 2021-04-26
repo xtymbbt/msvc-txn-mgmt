@@ -1,7 +1,7 @@
 package golangApplication
 
 import (
-	"../../../resources/config"
+	"../config"
 	_ "../database"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"

@@ -1,7 +1,7 @@
 package database
 
 import (
-	"../../../resources/config"
+	"../config"
 	myErr "../error"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql" // init mysql driver
