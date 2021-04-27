@@ -19,9 +19,19 @@ public class ProfileController {
 
     @PostMapping("/createProfile")
     public CommonResult createProfile(@RequestBody Profile profile,
-                                      @RequestParam(required = false) CommonRequestBody commonRequestBody) {
-        if (commonRequestBody == null) {
+                                      @RequestParam(value = "globalTransactionUUID", required = false)
+                                              UUID globalTransactionUUID,
+                                      @RequestParam(value = "serviceUUID", required = false)
+                                                  String serviceUUID,
+                                      @RequestParam(value = "parentUUID", required = false)
+                                                  String parentUUID,
+                                      @RequestParam(value = "child", required = false)
+                                                  String child) {
+        CommonRequestBody commonRequestBody;
+        if (globalTransactionUUID == null) {
             commonRequestBody = new CommonRequestBody(UUID.randomUUID(), "root", "", "");
+        } else {
+            commonRequestBody = new CommonRequestBody(globalTransactionUUID, serviceUUID, parentUUID, child);
         }
         return profileService.createProfile(profile, commonRequestBody);
     }

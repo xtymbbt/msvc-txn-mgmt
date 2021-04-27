@@ -9,6 +9,17 @@ import (
 
 func startDBTX(db *sql.DB, root *common.TreeNode, err *error) {
 	tx, errx := db.Begin()
+	defer func() {
+		if *err != nil {
+			log.Errorf("Error occured. err is: %#v\nExecuting rollback function.", *err)
+			*err = tx.Rollback()
+			if err != nil {
+				log.Errorf("transaction rollback failed. err is: %#v\n", *err)
+			} else {
+				log.Warn("transaction has rolled back.")
+			}
+		}
+	}()
 	if errx != nil {
 		*err = errx
 		log.Errorf("Transaction Begin failed. err is: %#v\n", errx)

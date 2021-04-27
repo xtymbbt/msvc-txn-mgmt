@@ -5,9 +5,9 @@ app:
 database:
   driver: "mysql"
   database_names:
-    - "test_order"
-    - "test_storage"
-    - "test_payment"
+    - "tx_register"
+    - "tx_profile"
+    - "tx_user_info"
   enable_slave_database: false
   max_idle_connection: 16
   max_open_connection: 100

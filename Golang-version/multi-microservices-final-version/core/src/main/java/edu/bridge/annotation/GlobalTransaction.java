@@ -1,4 +1,4 @@
-package edu.bridge.tx;
+package edu.bridge.annotation;
 
 /**
  * @author Bridge Wang

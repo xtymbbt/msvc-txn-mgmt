@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserInfo {
     private String username;
-    private Integer phoneNumber;
+    private Long phoneNumber;
     private String email;
     private String photo;
     private Float longitude;

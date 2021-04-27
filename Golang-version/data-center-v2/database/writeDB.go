@@ -3,6 +3,7 @@ package database
 import (
 	"data-center-v2/common"
 	"data-center-v2/config"
+	myErr "data-center-v2/error"
 	"data-center-v2/proto/commonInfo"
 	log "github.com/sirupsen/logrus"
 	"sync"
@@ -29,10 +30,16 @@ func Write(root *common.TreeNode) (err error) {
 			"error is: %#v\n", err)
 	}
 	if root != nil {
-		startDBTX(mainDB[root.Info.DbName], root, &err)
+		if db, ok := mainDB[root.Info.DbName]; ok {
+			startDBTX(db, root, &err)
+		} else {
+			err = myErr.NewError(404, "database "+root.Info.DbName+" not found")
+			return err
+		}
 		if err != nil {
 			log.Errorf("Executing Database Transaction failed.\n"+
 				"error is: %#v\n", err)
+			return err
 		}
 	}
 	//=========end=========
