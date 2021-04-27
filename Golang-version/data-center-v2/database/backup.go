@@ -30,7 +30,7 @@ func dbBackup(root *common.TreeNode) (err error) {
 	//=======new way=======
 	for _, database := range bakDBs {
 		if root.Info != nil {
-			startDBTX(database[root.Info.DbName], root, &err)
+			err = startDBTX(database[root.Info.DbName], root)
 		}
 	}
 	if err != nil {

@@ -7,23 +7,22 @@ import (
 	"strings"
 )
 
-func startDBTX(db *sql.DB, root *common.TreeNode, err *error) {
-	tx, errx := db.Begin()
+func startDBTX(db *sql.DB, root *common.TreeNode) (err error) {
+	tx, err := db.Begin()
 	defer func() {
-		if *err != nil {
-			log.Errorf("Error occured. err is: %#v\nExecuting rollback function.", *err)
-			*err = tx.Rollback()
+		if err != nil {
+			log.Errorf("Error occured. err is: %#v\nExecuting rollback function.", err)
+			err = tx.Rollback()
 			if err != nil {
-				log.Errorf("transaction rollback failed. err is: %#v\n", *err)
+				log.Errorf("transaction rollback failed. err is: %#v\n", err)
 			} else {
 				log.Warn("transaction has rolled back.")
 			}
 		}
 	}()
-	if errx != nil {
-		*err = errx
-		log.Errorf("Transaction Begin failed. err is: %#v\n", errx)
-		return
+	if err != nil {
+		log.Errorf("Transaction Begin failed. err is: %#v\n", err)
+		return err
 	}
 	// level order query to keep correct sql execute order.
 	queue := make([]*common.TreeNode, 0)
@@ -35,35 +34,32 @@ func startDBTX(db *sql.DB, root *common.TreeNode, err *error) {
 		for _, child := range tmp.Children {
 			queue = append(queue, child)
 		}
-		rows, errx := tx.Query("use " + tmp.Info.DbName)
-		if errx != nil {
-			*err = errx
-			log.Errorf("Query: use "+tmp.Info.DbName+" failed. err is: %#v\n", errx)
-			return
+		rows, err := tx.Query("use " + tmp.Info.DbName)
+		if err != nil {
+			log.Errorf("Query: use "+tmp.Info.DbName+" failed. err is: %#v\n", err)
+			return err
 		}
-		errx = rows.Close()
-		if errx != nil {
-			*err = errx
-			log.Errorf("Rows close failed. err is: %#v\n", errx)
-			return
+		err = rows.Close()
+		if err != nil {
+			log.Errorf("Rows close failed. err is: %#v\n", err)
+			return err
 		}
-		rows, errx = tx.Query(tmp.SqlStr)
-		if errx != nil {
-			*err = errx
-			log.Errorf("Query: "+tmp.SqlStr+" failed. err is: %#v\n", errx)
-			return
+		rows, err = tx.Query(tmp.SqlStr)
+		if err != nil {
+			log.Errorf("Query: "+tmp.SqlStr+" failed. err is: %#v\n", err)
+			return err
 		}
-		errx = rows.Close()
-		if errx != nil {
-			*err = errx
-			log.Errorf("Rows close failed. err is: %#v\n", errx)
-			return
+		err = rows.Close()
+		if err != nil {
+			log.Errorf("Rows close failed. err is: %#v\n", err)
+			return err
 		}
 	}
-	*err = tx.Commit()
-	if *err != nil {
-		log.Errorf("Transaction Commit failed. err is: %#v\n", *err)
+	err = tx.Commit()
+	if err != nil {
+		log.Errorf("Transaction Commit failed. err is: %#v\n", err)
 	}
+	return err
 }
 
 func dbInsertTX(tableName string, data map[string]string) (sqlStr string, err error) {

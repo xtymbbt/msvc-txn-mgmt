@@ -45,7 +45,8 @@ public class RegisterServiceImpl implements RegisterService {
         commonRequestBody.setChild("profileService.createProfile");
         // === Transaction codes ===
 
-        CommonResult res = userInfoService.createUserInfo(userInfo, commonRequestBody);
+        CommonResult res = userInfoService.createUserInfo(userInfo, commonRequestBody.getGlobalTransactionUUID(),
+                commonRequestBody.getServiceUUID(), commonRequestBody.getParentUUID(), commonRequestBody.getChild());
         if (!(res.getCode() > 199 && res.getCode() < 300)) {
             return res;
         }
@@ -59,7 +60,8 @@ public class RegisterServiceImpl implements RegisterService {
         commonRequestBody.setChild("");
         // === Transaction codes ===
 
-        res = profileService.createProfile(profile, commonRequestBody);
+        res = profileService.createProfile(profile, commonRequestBody.getGlobalTransactionUUID(),
+                commonRequestBody.getServiceUUID(), commonRequestBody.getParentUUID(), commonRequestBody.getChild());
         if (!(res.getCode() > 199 && res.getCode() < 300)) {
             return res;
         }

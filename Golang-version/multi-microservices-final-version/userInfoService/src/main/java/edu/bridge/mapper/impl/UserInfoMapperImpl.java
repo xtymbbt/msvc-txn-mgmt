@@ -32,7 +32,12 @@ public class UserInfoMapperImpl implements UserInfoMapper {
             try {
                 Object value = f.get(userInfo);
                 if (value != null) {
-                    data.put(CommonTools.humpToLine(f.getName()), "="+ value);
+                    System.out.println(value.getClass());
+                    if (value.getClass() == String.class) {
+                        value = "\"" + value + "\"";
+                        System.out.println(value);
+                    }
+                    data.put(CommonTools.humpToLine(f.getName()), value.toString());
                 }
             } catch (Exception e) {
                 e.printStackTrace();

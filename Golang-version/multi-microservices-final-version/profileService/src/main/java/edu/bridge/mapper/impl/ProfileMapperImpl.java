@@ -31,7 +31,11 @@ public class ProfileMapperImpl implements ProfileMapper {
             try {
                 Object value = f.get(profile);
                 if (value != null) {
-                    data.put(CommonTools.humpToLine(f.getName()), "="+ value);
+                    if (value.getClass() == String.class) {
+                        value = "\"" + value + "\"";
+                        System.out.println(value);
+                    }
+                    data.put(CommonTools.humpToLine(f.getName()), value.toString());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
