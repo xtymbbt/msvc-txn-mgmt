@@ -1,0 +1,3 @@
+io.seata.server.userInfo.db.lock.DataBaseLockManager
+io.seata.server.userInfo.file.lock.FileLockManager
+io.seata.server.userInfo.redis.lock.RedisLockManager

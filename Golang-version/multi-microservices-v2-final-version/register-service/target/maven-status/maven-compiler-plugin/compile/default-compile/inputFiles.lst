@@ -1,0 +1,8 @@
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/register-service/src/main/java/edu/bridge/RegisterApp.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/register-service/src/main/java/edu/bridge/service/impl/RegisterServiceImpl.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/register-service/src/main/java/edu/bridge/controller/RegisterController.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/register-service/src/main/java/edu/bridge/service/RegisterService.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/register-service/src/main/java/edu/bridge/mapper/impl/RegisterMapperImpl.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/register-service/src/main/java/edu/bridge/feign/ProfileService.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/register-service/src/main/java/edu/bridge/mapper/RegisterMapper.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/register-service/src/main/java/edu/bridge/feign/UserInfoService.java

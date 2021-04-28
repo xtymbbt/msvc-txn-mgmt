@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.bupt.mapper.ProfileMapper">
+    
+    <resultMap type="Profile" id="ProfileResult">
+        <result property="id"    column="id"    />
+        <result property="username"    column="username"    />
+        <result property="age"    column="age"    />
+        <result property="gender"    column="gender"    />
+        <result property="politicType"    column="politic_type"    />
+        <result property="birthDate"    column="birth_date"    />
+        <result property="photo"    column="photo"    />
+        <result property="oldName"    column="old_name"    />
+        <result property="identitiId"    column="identiti_id"    />
+        <result property="career"    column="career"    />
+        <result property="originHometown"    column="origin_hometown"    />
+        <result property="birthPlace"    column="birth_place"    />
+        <result property="maritalStatus"    column="marital_status"    />
+        <result property="homeAddress"    column="home_address"    />
+        <result property="currentProblem"    column="current_problem"    />
+        <result property="educationHistory"    column="education_history"    />
+        <result property="healthState"    column="health_state"    />
+        <result property="maritalStatusExplicit"    column="marital_status_explicit"    />
+        <result property="employmentHistory"    column="employment_history"    />
+        <result property="contractInstitusionHistory"    column="contract_institusion_history"    />
+        <result property="hobby"    column="hobby"    />
+        <result property="otherSituation"    column="other_situation"    />
+    </resultMap>
+
+    <sql id="selectProfileVo">
+        select id, username, age, gender, politic_type, birth_date, photo, old_name, identiti_id, career, origin_hometown, birth_place, marital_status, home_address, current_problem, education_history, health_state, marital_status_explicit, employment_history, contract_institusion_history, hobby, other_situation from profile
+    </sql>
+
+    <select id="selectProfileList" parameterType="Profile" resultMap="ProfileResult">
+        <include refid="selectProfileVo"/>
+        <where>  
+            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
+            <if test="oldName != null  and oldName != ''"> and old_name like concat('%', #{oldName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectProfileById" parameterType="Long" resultMap="ProfileResult">
+        <include refid="selectProfileVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertProfile" parameterType="Profile" useGeneratedKeys="true" keyProperty="id">
+        insert into profile
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null  and username != ''">username,</if>
+            <if test="age != null ">age,</if>
+            <if test="gender != null ">gender,</if>
+            <if test="politicType != null  and politicType != ''">politic_type,</if>
+            <if test="birthDate != null ">birth_date,</if>
+            <if test="photo != null  and photo != ''">photo,</if>
+            <if test="oldName != null  and oldName != ''">old_name,</if>
+            <if test="identitiId != null  and identitiId != ''">identiti_id,</if>
+            <if test="career != null  and career != ''">career,</if>
+            <if test="originHometown != null  and originHometown != ''">origin_hometown,</if>
+            <if test="birthPlace != null  and birthPlace != ''">birth_place,</if>
+            <if test="maritalStatus != null  and maritalStatus != ''">marital_status,</if>
+            <if test="homeAddress != null  and homeAddress != ''">home_address,</if>
+            <if test="currentProblem != null  and currentProblem != ''">current_problem,</if>
+            <if test="educationHistory != null  and educationHistory != ''">education_history,</if>
+            <if test="healthState != null  and healthState != ''">health_state,</if>
+            <if test="maritalStatusExplicit != null  and maritalStatusExplicit != ''">marital_status_explicit,</if>
+            <if test="employmentHistory != null  and employmentHistory != ''">employment_history,</if>
+            <if test="contractInstitusionHistory != null  and contractInstitusionHistory != ''">contract_institusion_history,</if>
+            <if test="hobby != null  and hobby != ''">hobby,</if>
+            <if test="otherSituation != null  and otherSituation != ''">other_situation,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="username != null  and username != ''">#{username},</if>
+            <if test="age != null ">#{age},</if>
+            <if test="gender != null ">#{gender},</if>
+            <if test="politicType != null  and politicType != ''">#{politicType},</if>
+            <if test="birthDate != null ">#{birthDate},</if>
+            <if test="photo != null  and photo != ''">#{photo},</if>
+            <if test="oldName != null  and oldName != ''">#{oldName},</if>
+            <if test="identitiId != null  and identitiId != ''">#{identitiId},</if>
+            <if test="career != null  and career != ''">#{career},</if>
+            <if test="originHometown != null  and originHometown != ''">#{originHometown},</if>
+            <if test="birthPlace != null  and birthPlace != ''">#{birthPlace},</if>
+            <if test="maritalStatus != null  and maritalStatus != ''">#{maritalStatus},</if>
+            <if test="homeAddress != null  and homeAddress != ''">#{homeAddress},</if>
+            <if test="currentProblem != null  and currentProblem != ''">#{currentProblem},</if>
+            <if test="educationHistory != null  and educationHistory != ''">#{educationHistory},</if>
+            <if test="healthState != null  and healthState != ''">#{healthState},</if>
+            <if test="maritalStatusExplicit != null  and maritalStatusExplicit != ''">#{maritalStatusExplicit},</if>
+            <if test="employmentHistory != null  and employmentHistory != ''">#{employmentHistory},</if>
+            <if test="contractInstitusionHistory != null  and contractInstitusionHistory != ''">#{contractInstitusionHistory},</if>
+            <if test="hobby != null  and hobby != ''">#{hobby},</if>
+            <if test="otherSituation != null  and otherSituation != ''">#{otherSituation},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProfile" parameterType="Profile">
+        update profile
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="username != null  and username != ''">username = #{username},</if>
+            <if test="age != null ">age = #{age},</if>
+            <if test="gender != null ">gender = #{gender},</if>
+            <if test="politicType != null  and politicType != ''">politic_type = #{politicType},</if>
+            <if test="birthDate != null ">birth_date = #{birthDate},</if>
+            <if test="photo != null  and photo != ''">photo = #{photo},</if>
+            <if test="oldName != null  and oldName != ''">old_name = #{oldName},</if>
+            <if test="identitiId != null  and identitiId != ''">identiti_id = #{identitiId},</if>
+            <if test="career != null  and career != ''">career = #{career},</if>
+            <if test="originHometown != null  and originHometown != ''">origin_hometown = #{originHometown},</if>
+            <if test="birthPlace != null  and birthPlace != ''">birth_place = #{birthPlace},</if>
+            <if test="maritalStatus != null  and maritalStatus != ''">marital_status = #{maritalStatus},</if>
+            <if test="homeAddress != null  and homeAddress != ''">home_address = #{homeAddress},</if>
+            <if test="currentProblem != null  and currentProblem != ''">current_problem = #{currentProblem},</if>
+            <if test="educationHistory != null  and educationHistory != ''">education_history = #{educationHistory},</if>
+            <if test="healthState != null  and healthState != ''">health_state = #{healthState},</if>
+            <if test="maritalStatusExplicit != null  and maritalStatusExplicit != ''">marital_status_explicit = #{maritalStatusExplicit},</if>
+            <if test="employmentHistory != null  and employmentHistory != ''">employment_history = #{employmentHistory},</if>
+            <if test="contractInstitusionHistory != null  and contractInstitusionHistory != ''">contract_institusion_history = #{contractInstitusionHistory},</if>
+            <if test="hobby != null  and hobby != ''">hobby = #{hobby},</if>
+            <if test="otherSituation != null  and otherSituation != ''">other_situation = #{otherSituation},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProfileById" parameterType="Long">
+        delete from profile where id = #{id}
+    </delete>
+
+    <delete id="deleteProfileByIds" parameterType="String">
+        delete from profile where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

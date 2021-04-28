@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: order
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/tx_tcc_register?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+
+  cloud:
+    alibaba:
+      seata:
+        tx-service-group: info_manage_group
+
+server:
+  port: 8083
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+mybatis-plus:
+  type-aliases-package: edu.bupt.entity
+  mapper-locations:
+    - classpath:/mapper/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    cn.tedu.order.mapper: DEBUG
+
+ribbon:
+  ReadTimeout: 10000

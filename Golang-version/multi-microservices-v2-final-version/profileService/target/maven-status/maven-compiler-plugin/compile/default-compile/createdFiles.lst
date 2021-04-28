@@ -1,0 +1,6 @@
+edu/bridge/service/ProfileService.class
+edu/bridge/controller/ProfileController.class
+edu/bridge/mapper/ProfileMapper.class
+edu/bridge/ProfileApp.class
+edu/bridge/mapper/impl/ProfileMapperImpl.class
+edu/bridge/service/impl/ProfileServiceImpl.class

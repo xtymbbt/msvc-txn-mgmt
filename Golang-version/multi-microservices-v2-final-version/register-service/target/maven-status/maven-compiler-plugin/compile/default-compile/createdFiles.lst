@@ -1,0 +1,8 @@
+edu/bridge/RegisterApp.class
+edu/bridge/mapper/RegisterMapper.class
+edu/bridge/service/RegisterService.class
+edu/bridge/mapper/impl/RegisterMapperImpl.class
+edu/bridge/feign/UserInfoService.class
+edu/bridge/controller/RegisterController.class
+edu/bridge/service/impl/RegisterServiceImpl.class
+edu/bridge/feign/ProfileService.class
