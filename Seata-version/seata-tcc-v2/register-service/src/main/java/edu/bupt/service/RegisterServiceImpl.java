@@ -43,7 +43,7 @@ public class RegisterServiceImpl implements RegisterService {
 
 
         // 创建用户信息user info
-        userInfoClient.decrease(register.getProductId(), register.getCount());
+        userInfoClient.createUserInfo(register.getProductId(), register.getCount());
 
         // 创建用户档案user profile
         profileClient.decrease(register.getUserId(), register.getMoney());

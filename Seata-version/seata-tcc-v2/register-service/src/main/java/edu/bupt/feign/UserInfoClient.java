@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "storage")
 public interface UserInfoClient {
-    @GetMapping("/decrease")
-    String decrease(@RequestParam Long productId, @RequestParam Integer count);
+    @GetMapping("/createUserInfo")
+    String createUserInfo(@RequestParam Long productId, @RequestParam Integer count);
 }
