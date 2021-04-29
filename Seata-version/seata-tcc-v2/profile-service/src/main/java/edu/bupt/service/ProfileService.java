@@ -1,7 +1,7 @@
 package edu.bupt.service;
 
-import java.math.BigDecimal;
+import edu.bupt.domain.Profile;
 
 public interface ProfileService {
-    void decrease(Long userId, BigDecimal money);
+    void createProfile(Profile profile);
 }

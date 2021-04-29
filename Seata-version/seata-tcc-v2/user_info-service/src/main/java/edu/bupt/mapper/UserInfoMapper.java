@@ -7,7 +7,7 @@ import java.util.List;
  * user_infoMapper接口
  * 
  * @author bridge
- * @date 2021-04-27
+ * @date 2021-04-29
  */
 public interface UserInfoMapper 
 {

@@ -10,60 +10,60 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.controller.BaseController;
-import edu.bupt.domain.UserInfo;
-import edu.bupt.service.IUserInfoService;
+import edu.bupt.domain.Profile;
+import edu.bupt.service.IProfileService;
 
 /**
- * user_info 提供者
+ * profile 提供者
  * 
  * @author bridge
- * @date 2021-04-27
+ * @date 2021-04-29
  */
 @RestController
-@RequestMapping("user_info")
-public class UserInfoController extends BaseController
+@RequestMapping("profile")
+public class ProfileController extends BaseController
 {
 	
 	@Autowired
-	private IUserInfoService userInfoService;
+	private IProfileService profileService;
 	
 	/**
 	 * 查询${tableComment}
 	 */
 	@GetMapping("get/{id}")
-	public UserInfo get(@PathVariable("id") Long id)
+	public Profile get(@PathVariable("id") Long id)
 	{
-		return userInfoService.selectUserInfoById(id);
+		return profileService.selectProfileById(id);
 		
 	}
 	
 	/**
-	 * 查询user_info列表
+	 * 查询profile列表
 	 */
 	@GetMapping("list")
-	public R list(UserInfo userInfo)
+	public R list(Profile profile)
 	{
 		startPage();
-        return result(userInfoService.selectUserInfoList(userInfo));
+        return result(profileService.selectProfileList(profile));
 	}
 	
 	
 	/**
-	 * 新增保存user_info
+	 * 新增保存profile
 	 */
 	@PostMapping("save")
-	public R addSave(@RequestBody UserInfo userInfo)
+	public R addSave(@RequestBody Profile profile)
 	{		
-		return toAjax(userInfoService.insertUserInfo(userInfo));
+		return toAjax(profileService.insertProfile(profile));
 	}
 
 	/**
-	 * 修改保存user_info
+	 * 修改保存profile
 	 */
 	@PostMapping("update")
-	public R editSave(@RequestBody UserInfo userInfo)
+	public R editSave(@RequestBody Profile profile)
 	{		
-		return toAjax(userInfoService.updateUserInfo(userInfo));
+		return toAjax(profileService.updateProfile(profile));
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public class UserInfoController extends BaseController
 	@PostMapping("remove")
 	public R remove(String ids)
 	{		
-		return toAjax(userInfoService.deleteUserInfoByIds(ids));
+		return toAjax(profileService.deleteProfileByIds(ids));
 	}
 	
 }

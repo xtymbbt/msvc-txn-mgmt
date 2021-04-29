@@ -1,6 +1,7 @@
 package edu.bupt.tcc;
 
 import edu.bupt.domain.UserInfo;
+import edu.bupt.domain.UserInfo;
 import edu.bupt.mapper.UserInfoMapper;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import lombok.extern.slf4j.Slf4j;
@@ -17,19 +18,12 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
 
     @Transactional
     @Override
-    public boolean prepareDecreaseStorage(BusinessActionContext businessActionContext, Long productId, Integer count) {
-        log.info("减少商品库存，第一阶段，锁定减少的库存量，productId="+productId+"， count="+count);
+    public boolean prepareCreateUserInfo(BusinessActionContext businessActionContext, UserInfo userInfo) {
+        log.info("创建用户信息，第一阶段，预留资源 - "+businessActionContext.getXid());
 
-        UserInfo userInfo = userInfoMapper.selectById(productId);
-        if (userInfo.getResidue()-count<0) {
-            throw new RuntimeException("库存不足");
-        }
-
-        /*
-        库存减掉count， 冻结库存增加count
-         */
-        userInfoMapper.updateFrozen(productId, userInfo.getResidue()-count, userInfo.getFrozen()+count);
-
+        userInfo.setStatus(0);
+        userInfoMapper.insertUserInfo(userInfo);
+       
         //保存标识
         ResultHolder.setResult(getClass(), businessActionContext.getXid(), "p");
         return true;
@@ -38,18 +32,21 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
     @Transactional
     @Override
     public boolean commit(BusinessActionContext businessActionContext) {
-        long productId = Long.parseLong(businessActionContext.getActionContext("productId").toString());
-        int count = Integer.parseInt(businessActionContext.getActionContext("count").toString());
-        log.info("减少商品库存，第二阶段提交，productId="+productId+"， count="+count);
+        log.info("创建 userInfo 第二阶段提交，修改 userInfo 状态1 - "+businessActionContext.getXid());
 
-        //防止重复提交
+        // 防止幂等性，如果commit阶段重复执行则直接返回
         if (ResultHolder.getResult(getClass(), businessActionContext.getXid()) == null) {
             return true;
         }
 
-        userInfoMapper.updateFrozenToUsed(productId, count);
+        //Long userInfoId = (Long) businessActionContext.getActionContext("userInfoId");
+        long userInfoId = Long.parseLong(businessActionContext.getActionContext("userInfoId").toString());
+        UserInfo UserInfo = new UserInfo();
+        UserInfo.setId(userInfoId);
+        UserInfo.setStatus(1);
+        userInfoMapper.updateUserInfo(UserInfo);
 
-        //删除标识
+        //提交成功是删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());
         return true;
     }
@@ -57,19 +54,21 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
     @Transactional
     @Override
     public boolean rollback(BusinessActionContext businessActionContext) {
+        log.info("创建 userInfo 第二阶段回滚，删除用户信息 - "+businessActionContext.getXid());
 
-        long productId = Long.parseLong(businessActionContext.getActionContext("productId").toString());
-        int count = Integer.parseInt(businessActionContext.getActionContext("count").toString());
-        log.info("减少商品库存，第二阶段，回滚，productId="+productId+"， count="+count);
-
-        //防止重复提交
+        //第一阶段没有完成的情况下，不必执行回滚
+        //因为第一阶段有本地事务，事务失败时已经进行了回滚。
+        //如果这里第一阶段成功，而其他全局事务参与者失败，这里会执行回滚
+        //幂等性控制：如果重复执行回滚则直接返回
         if (ResultHolder.getResult(getClass(), businessActionContext.getXid()) == null) {
             return true;
         }
 
-        userInfoMapper.updateFrozenToResidue(productId, count);
+        //Long userInfoId = (Long) businessActionContext.getActionContext("userInfoId");
+        long userInfoId = Long.parseLong(businessActionContext.getActionContext("userInfoId").toString());
+        userInfoMapper.deleteUserInfoById(userInfoId);
 
-        //删除标识
+        //回滚结束时，删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());
         return true;
     }

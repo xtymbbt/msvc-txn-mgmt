@@ -15,10 +15,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="currentAddress"    column="current_address"    />
         <result property="hobbyTags"    column="hobby_tags"    />
         <result property="consumeTags"    column="consume_tags"    />
+        <result property="status"    column="status"    />
     </resultMap>
 
     <sql id="selectUserInfoVo">
-        select id, username, phone_number, email, photo, longitude, latitude, current_address, hobby_tags, consume_tags from user_info
+        select id, username, phone_number, email, photo, longitude, latitude, current_address, hobby_tags, consume_tags, status from user_info
     </sql>
 
     <select id="selectUserInfoList" parameterType="UserInfo" resultMap="UserInfoResult">
@@ -45,6 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="currentAddress != null  and currentAddress != ''">current_address,</if>
             <if test="hobbyTags != null  and hobbyTags != ''">hobby_tags,</if>
             <if test="consumeTags != null  and consumeTags != ''">consume_tags,</if>
+            <if test="status != null ">status,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="username != null  and username != ''">#{username},</if>
@@ -56,6 +58,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="currentAddress != null  and currentAddress != ''">#{currentAddress},</if>
             <if test="hobbyTags != null  and hobbyTags != ''">#{hobbyTags},</if>
             <if test="consumeTags != null  and consumeTags != ''">#{consumeTags},</if>
+            <if test="status != null ">#{status},</if>
          </trim>
     </insert>
 
@@ -71,6 +74,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="currentAddress != null  and currentAddress != ''">current_address = #{currentAddress},</if>
             <if test="hobbyTags != null  and hobbyTags != ''">hobby_tags = #{hobbyTags},</if>
             <if test="consumeTags != null  and consumeTags != ''">consume_tags = #{consumeTags},</if>
+            <if test="status != null ">status = #{status},</if>
         </trim>
         where id = #{id}
     </update>

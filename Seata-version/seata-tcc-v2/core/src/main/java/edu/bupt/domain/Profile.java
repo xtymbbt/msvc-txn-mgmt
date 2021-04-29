@@ -9,7 +9,7 @@ import java.util.Date;
  * profile对象 profile
  * 
  * @author bridge
- * @date 2021-04-27
+ * @date 2021-04-29
  */
 public class Profile
 {
@@ -80,6 +80,9 @@ public class Profile
 
     /** 其他需要说明的情况 */
     private String otherSituation;
+
+    /** TCC事务状态 */
+    private Integer status;
 
     public void setId(Long id) 
     {
@@ -279,6 +282,15 @@ public class Profile
     {
         return otherSituation;
     }
+    public void setStatus(Integer status) 
+    {
+        this.status = status;
+    }
+
+    public Integer getStatus() 
+    {
+        return status;
+    }
 
     @Override
     public String toString() {
@@ -305,6 +317,7 @@ public class Profile
             .append("contractInstitusionHistory", getContractInstitusionHistory())
             .append("hobby", getHobby())
             .append("otherSituation", getOtherSituation())
+            .append("status", getStatus())
             .toString();
     }
 }

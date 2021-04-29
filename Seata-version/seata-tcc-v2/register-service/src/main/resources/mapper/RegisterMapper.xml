@@ -10,10 +10,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="password"    column="password"    />
         <result property="phoneNumber"    column="phone_number"    />
         <result property="email"    column="email"    />
+        <result property="status"    column="status"    />
     </resultMap>
 
     <sql id="selectRegisterVo">
-        select id, username, password, phone_number, email from register_info
+        select id, username, password, phone_number, email, status from register_info
     </sql>
 
     <select id="selectRegisterList" parameterType="Register" resultMap="RegisterResult">
@@ -35,12 +36,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="password != null  and password != ''">password,</if>
             <if test="phoneNumber != null ">phone_number,</if>
             <if test="email != null  and email != ''">email,</if>
+            <if test="status != null ">status,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="username != null  and username != ''">#{username},</if>
             <if test="password != null  and password != ''">#{password},</if>
             <if test="phoneNumber != null ">#{phoneNumber},</if>
             <if test="email != null  and email != ''">#{email},</if>
+            <if test="status != null ">#{status},</if>
          </trim>
     </insert>
 
@@ -51,6 +54,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="password != null  and password != ''">password = #{password},</if>
             <if test="phoneNumber != null ">phone_number = #{phoneNumber},</if>
             <if test="email != null  and email != ''">email = #{email},</if>
+            <if test="status != null ">status = #{status},</if>
         </trim>
         where id = #{id}
     </update>

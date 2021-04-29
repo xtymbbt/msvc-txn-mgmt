@@ -1,5 +1,6 @@
 package edu.bupt.tcc;
 
+import edu.bupt.domain.Profile;
 import edu.bupt.mapper.ProfileMapper;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import lombok.extern.slf4j.Slf4j;
@@ -17,25 +18,13 @@ public class ProfileTccActionImpl implements ProfileTccAction {
 
     @Transactional
     @Override
-    public boolean prepareDecreaseAccount(BusinessActionContext businessActionContext, Long userId, BigDecimal money) {
-        log.info("减少账户金额，第一阶段锁定金额，userId="+userId+"， money="+money);
+    public boolean prepareDecreaseAccount(BusinessActionContext businessActionContext, Profile profile) {
+        log.info("创建 profile 第一阶段，预留资源 - "+businessActionContext.getXid());
 
-        edu.bupt.domain.Profile profile = profileMapper.selectById(userId);
-        if (profile.getResidue().compareTo(money) < 0) {
-            throw new RuntimeException("账户金额不足");
-        }
+        profile.setStatus(0);
+        profileMapper.insertProfile(profile);
 
-        /*
-        余额-money
-        冻结+money
-         */
-        profileMapper.updateFrozen(userId, profile.getResidue().subtract(money), profile.getFrozen().add(money));
-
-        if (Math.random() < 0.999) {
-//            throw new RuntimeException("模拟异常");
-        }
-
-        //保存标识
+        //事务成功，保存一个标识，供第二阶段进行判断
         ResultHolder.setResult(getClass(), businessActionContext.getXid(), "p");
         return true;
     }
@@ -43,19 +32,21 @@ public class ProfileTccActionImpl implements ProfileTccAction {
     @Transactional
     @Override
     public boolean commit(BusinessActionContext businessActionContext) {
+        log.info("创建 profile 第二阶段提交，修改 注册 状态1 - "+businessActionContext.getXid());
 
-        long userId = Long.parseLong(businessActionContext.getActionContext("userId").toString());
-        BigDecimal money =  new BigDecimal(businessActionContext.getActionContext("money").toString());
-        log.info("减少账户金额，第二阶段，提交，userId="+userId+"， money="+money);
-
-        //防止重复提交
+        // 防止幂等性，如果commit阶段重复执行则直接返回
         if (ResultHolder.getResult(getClass(), businessActionContext.getXid()) == null) {
             return true;
         }
 
-        profileMapper.updateFrozenToUsed(userId, money);
+        //Long profileId = (Long) businessActionContext.getActionContext("profileId");
+        long profileId = Long.parseLong(businessActionContext.getActionContext("profileId").toString());
+        Profile profile = new Profile();
+        profile.setId(profileId);
+        profile.setStatus(1);
+        profileMapper.updateProfile(profile);
 
-        //删除标识
+        //提交成功是删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());
         return true;
     }
@@ -63,19 +54,21 @@ public class ProfileTccActionImpl implements ProfileTccAction {
     @Transactional
     @Override
     public boolean rollback(BusinessActionContext businessActionContext) {
-        long userId = Long.parseLong(businessActionContext.getActionContext("userId").toString());
-        BigDecimal money =  new BigDecimal(businessActionContext.getActionContext("money").toString());
+        log.info("创建 order 第二阶段回滚，删除订单 - "+businessActionContext.getXid());
 
-        //防止重复提交
+        //第一阶段没有完成的情况下，不必执行回滚
+        //因为第一阶段有本地事务，事务失败时已经进行了回滚。
+        //如果这里第一阶段成功，而其他全局事务参与者失败，这里会执行回滚
+        //幂等性控制：如果重复执行回滚则直接返回
         if (ResultHolder.getResult(getClass(), businessActionContext.getXid()) == null) {
             return true;
         }
 
-        log.info("减少账户金额，第二阶段，回滚，userId="+userId+"， money="+money);
+        //Long profileId = (Long) businessActionContext.getActionContext("profileId");
+        long profileId = Long.parseLong(businessActionContext.getActionContext("profileId").toString());
+        profileMapper.deleteProfileById(profileId);
 
-        profileMapper.updateFrozenToResidue(userId, money);
-
-        //删除标识
+        //回滚结束时，删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());
         return true;
     }

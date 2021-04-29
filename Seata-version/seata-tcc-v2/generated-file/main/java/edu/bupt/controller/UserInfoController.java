@@ -10,60 +10,60 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.controller.BaseController;
-import edu.bupt.domain.Register;
-import edu.bupt.service.IRegisterService;
+import edu.bupt.domain.UserInfo;
+import edu.bupt.service.IUserInfoService;
 
 /**
- * register 提供者
+ * user_info 提供者
  * 
  * @author bridge
- * @date 2021-04-27
+ * @date 2021-04-29
  */
 @RestController
-@RequestMapping("register")
-public class RegisterController extends BaseController
+@RequestMapping("user_info")
+public class UserInfoController extends BaseController
 {
 	
 	@Autowired
-	private IRegisterService registerService;
+	private IUserInfoService userInfoService;
 	
 	/**
 	 * 查询${tableComment}
 	 */
 	@GetMapping("get/{id}")
-	public Register get(@PathVariable("id") Long id)
+	public UserInfo get(@PathVariable("id") Long id)
 	{
-		return registerService.selectRegisterById(id);
+		return userInfoService.selectUserInfoById(id);
 		
 	}
 	
 	/**
-	 * 查询register列表
+	 * 查询user_info列表
 	 */
 	@GetMapping("list")
-	public R list(Register register)
+	public R list(UserInfo userInfo)
 	{
 		startPage();
-        return result(registerService.selectRegisterList(register));
+        return result(userInfoService.selectUserInfoList(userInfo));
 	}
 	
 	
 	/**
-	 * 新增保存register
+	 * 新增保存user_info
 	 */
 	@PostMapping("save")
-	public R addSave(@RequestBody Register register)
+	public R addSave(@RequestBody UserInfo userInfo)
 	{		
-		return toAjax(registerService.insertRegister(register));
+		return toAjax(userInfoService.insertUserInfo(userInfo));
 	}
 
 	/**
-	 * 修改保存register
+	 * 修改保存user_info
 	 */
 	@PostMapping("update")
-	public R editSave(@RequestBody Register register)
+	public R editSave(@RequestBody UserInfo userInfo)
 	{		
-		return toAjax(registerService.updateRegister(register));
+		return toAjax(userInfoService.updateUserInfo(userInfo));
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public class RegisterController extends BaseController
 	@PostMapping("remove")
 	public R remove(String ids)
 	{		
-		return toAjax(registerService.deleteRegisterByIds(ids));
+		return toAjax(userInfoService.deleteUserInfoByIds(ids));
 	}
 	
 }

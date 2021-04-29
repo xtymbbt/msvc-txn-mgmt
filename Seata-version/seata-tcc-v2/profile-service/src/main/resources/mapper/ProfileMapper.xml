@@ -27,10 +27,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="contractInstitusionHistory"    column="contract_institusion_history"    />
         <result property="hobby"    column="hobby"    />
         <result property="otherSituation"    column="other_situation"    />
+        <result property="status"    column="status"    />
     </resultMap>
 
     <sql id="selectProfileVo">
-        select id, username, age, gender, politic_type, birth_date, photo, old_name, identiti_id, career, origin_hometown, birth_place, marital_status, home_address, current_problem, education_history, health_state, marital_status_explicit, employment_history, contract_institusion_history, hobby, other_situation from profile
+        select id, username, age, gender, politic_type, birth_date, photo, old_name, identiti_id, career, origin_hometown, birth_place, marital_status, home_address, current_problem, education_history, health_state, marital_status_explicit, employment_history, contract_institusion_history, hobby, other_situation, status from profile
     </sql>
 
     <select id="selectProfileList" parameterType="Profile" resultMap="ProfileResult">
@@ -70,6 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="contractInstitusionHistory != null  and contractInstitusionHistory != ''">contract_institusion_history,</if>
             <if test="hobby != null  and hobby != ''">hobby,</if>
             <if test="otherSituation != null  and otherSituation != ''">other_situation,</if>
+            <if test="status != null ">status,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="username != null  and username != ''">#{username},</if>
@@ -93,6 +95,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="contractInstitusionHistory != null  and contractInstitusionHistory != ''">#{contractInstitusionHistory},</if>
             <if test="hobby != null  and hobby != ''">#{hobby},</if>
             <if test="otherSituation != null  and otherSituation != ''">#{otherSituation},</if>
+            <if test="status != null ">#{status},</if>
          </trim>
     </insert>
 
@@ -120,6 +123,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="contractInstitusionHistory != null  and contractInstitusionHistory != ''">contract_institusion_history = #{contractInstitusionHistory},</if>
             <if test="hobby != null  and hobby != ''">hobby = #{hobby},</if>
             <if test="otherSituation != null  and otherSituation != ''">other_situation = #{otherSituation},</if>
+            <if test="status != null ">status = #{status},</if>
         </trim>
         where id = #{id}
     </update>

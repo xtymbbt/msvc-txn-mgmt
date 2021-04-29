@@ -1,5 +1,6 @@
 package edu.bupt.domain;
 
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -7,7 +8,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * user_info对象 user_info
  * 
  * @author bridge
- * @date 2021-04-27
+ * @date 2021-04-29
  */
 public class UserInfo
 {
@@ -42,6 +43,9 @@ public class UserInfo
 
     /** 消费倾向 */
     private String consumeTags;
+
+    /** TCC事务状态 */
+    private Integer status;
 
     public void setId(Long id) 
     {
@@ -133,6 +137,15 @@ public class UserInfo
     {
         return consumeTags;
     }
+    public void setStatus(Integer status) 
+    {
+        this.status = status;
+    }
+
+    public Integer getStatus() 
+    {
+        return status;
+    }
 
     @Override
     public String toString() {
@@ -147,6 +160,7 @@ public class UserInfo
             .append("currentAddress", getCurrentAddress())
             .append("hobbyTags", getHobbyTags())
             .append("consumeTags", getConsumeTags())
+            .append("status", getStatus())
             .toString();
     }
 }

@@ -1,5 +1,6 @@
 package edu.bupt.service;
 
+import edu.bupt.domain.UserInfo;
 import edu.bupt.tcc.UserInfoTccAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     private UserInfoTccAction userInfoTccAction;
 
     @Override
-    public void decrease(Long productId, Integer count) throws Exception {
-        // storageMapper.decrease(productId,count);
-        userInfoTccAction.prepareDecreaseStorage(null, productId, count);
+    public void create(UserInfo userInfo) throws Exception {
+        userInfoTccAction.prepareCreateUserInfo(null, userInfo);
     }
 
 }

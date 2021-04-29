@@ -8,7 +8,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * register对象 register_info
  * 
  * @author bridge
- * @date 2021-04-27
+ * @date 2021-04-29
  */
 public class Register
 {
@@ -29,7 +29,22 @@ public class Register
     /** 邮箱 */
     private String email;
 
-    public void setId(Long id) 
+    /** TCC事务状态 */
+    private Integer status;
+
+    public Register() {
+    }
+
+    public Register(Long id, String username, String password, Long phoneNumber, String email, Integer status) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.status = status;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -74,6 +89,15 @@ public class Register
     {
         return email;
     }
+    public void setStatus(Integer status) 
+    {
+        this.status = status;
+    }
+
+    public Integer getStatus() 
+    {
+        return status;
+    }
 
     @Override
     public String toString() {
@@ -83,6 +107,7 @@ public class Register
             .append("password", getPassword())
             .append("phoneNumber", getPhoneNumber())
             .append("email", getEmail())
+            .append("status", getStatus())
             .toString();
     }
 }

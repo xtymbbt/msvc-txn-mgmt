@@ -45,3 +45,23 @@ CREATE TABLE IF NOT EXISTS `undo_log`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1
   DEFAULT CHARSET = utf8 COMMENT ='AT transaction mode undo table';
+
+CREATE TABLE IF NOT EXISTS segment
+(
+    id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '自增主键',
+    VERSION       BIGINT      DEFAULT 0  NOT NULL COMMENT '版本号',
+    business_type VARCHAR(63) DEFAULT '' NOT NULL COMMENT '业务类型，唯一',
+    max_id        BIGINT      DEFAULT 0  NOT NULL COMMENT '当前最大id',
+    step          INT         DEFAULT 0  NULL COMMENT '步长',
+    increment     INT         DEFAULT 1  NOT NULL COMMENT '每次id增量',
+    remainder     INT         DEFAULT 0  NOT NULL COMMENT '余数',
+    created_at    BIGINT UNSIGNED        NOT NULL COMMENT '创建时间',
+    updated_at    BIGINT UNSIGNED        NOT NULL COMMENT '更新时间',
+    CONSTRAINT uniq_business_type UNIQUE (business_type)
+    ) CHARSET = utf8mb4
+    ENGINE INNODB COMMENT '号段表';
+
+
+INSERT INTO segment
+(VERSION, business_type, max_id, step, increment, remainder, created_at, updated_at)
+VALUES (1, 'profile_id', 1000, 1000, 1, 0, NOW(), NOW());

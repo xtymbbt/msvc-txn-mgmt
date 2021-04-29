@@ -10,60 +10,60 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.controller.BaseController;
-import edu.bupt.domain.Profile;
-import edu.bupt.service.IProfileService;
+import edu.bupt.domain.Register;
+import edu.bupt.service.IRegisterService;
 
 /**
- * profile 提供者
+ * register 提供者
  * 
  * @author bridge
- * @date 2021-04-27
+ * @date 2021-04-29
  */
 @RestController
-@RequestMapping("profile")
-public class ProfileController extends BaseController
+@RequestMapping("register")
+public class RegisterController extends BaseController
 {
 	
 	@Autowired
-	private IProfileService profileService;
+	private IRegisterService registerService;
 	
 	/**
 	 * 查询${tableComment}
 	 */
 	@GetMapping("get/{id}")
-	public Profile get(@PathVariable("id") Long id)
+	public Register get(@PathVariable("id") Long id)
 	{
-		return profileService.selectProfileById(id);
+		return registerService.selectRegisterById(id);
 		
 	}
 	
 	/**
-	 * 查询profile列表
+	 * 查询register列表
 	 */
 	@GetMapping("list")
-	public R list(Profile profile)
+	public R list(Register register)
 	{
 		startPage();
-        return result(profileService.selectProfileList(profile));
+        return result(registerService.selectRegisterList(register));
 	}
 	
 	
 	/**
-	 * 新增保存profile
+	 * 新增保存register
 	 */
 	@PostMapping("save")
-	public R addSave(@RequestBody Profile profile)
+	public R addSave(@RequestBody Register register)
 	{		
-		return toAjax(profileService.insertProfile(profile));
+		return toAjax(registerService.insertRegister(register));
 	}
 
 	/**
-	 * 修改保存profile
+	 * 修改保存register
 	 */
 	@PostMapping("update")
-	public R editSave(@RequestBody Profile profile)
+	public R editSave(@RequestBody Register register)
 	{		
-		return toAjax(profileService.updateProfile(profile));
+		return toAjax(registerService.updateRegister(register));
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public class ProfileController extends BaseController
 	@PostMapping("remove")
 	public R remove(String ids)
 	{		
-		return toAjax(profileService.deleteProfileByIds(ids));
+		return toAjax(registerService.deleteRegisterByIds(ids));
 	}
 	
 }

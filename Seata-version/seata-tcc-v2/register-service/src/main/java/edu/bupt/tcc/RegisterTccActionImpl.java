@@ -3,6 +3,7 @@ package edu.bupt.tcc;
 import edu.bupt.domain.Register;
 import edu.bupt.mapper.RegisterMapper;
 import io.seata.rm.tcc.api.BusinessActionContext;
+import io.seata.rm.tcc.api.BusinessActionContextParameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,11 +19,16 @@ public class RegisterTccActionImpl implements RegisterTccAction {
 
     @Transactional
     @Override
-    public boolean prepareCreateOrder(BusinessActionContext businessActionContext, Long orderId, Long userId, Long productId, Integer count, BigDecimal money) {
+    public boolean prepareRegister(BusinessActionContext businessActionContext,
+                                   Long id,
+                                   String username,
+                                   String password,
+                                   Long phoneNumber,
+                                   String email) {
         log.info("创建 register 第一阶段，预留资源 - "+businessActionContext.getXid());
 
-        Register register = new Register(orderId, userId, productId, count, money, 0);
-        registerMapper.create(register);
+        Register register = new Register(id, username, password, phoneNumber, email, 0);
+        registerMapper.insertRegister(register);
 
         //事务成功，保存一个标识，供第二阶段进行判断
         ResultHolder.setResult(getClass(), businessActionContext.getXid(), "p");
@@ -32,16 +38,19 @@ public class RegisterTccActionImpl implements RegisterTccAction {
     @Transactional
     @Override
     public boolean commit(BusinessActionContext businessActionContext) {
-        log.info("创建 order 第二阶段提交，修改订单状态1 - "+businessActionContext.getXid());
+        log.info("创建 register 第二阶段提交，修改 注册 状态1 - "+businessActionContext.getXid());
 
         // 防止幂等性，如果commit阶段重复执行则直接返回
         if (ResultHolder.getResult(getClass(), businessActionContext.getXid()) == null) {
             return true;
         }
 
-        //Long orderId = (Long) businessActionContext.getActionContext("orderId");
-        long orderId = Long.parseLong(businessActionContext.getActionContext("orderId").toString());
-        registerMapper.updateStatus(orderId, 1);
+        //Long registerId = (Long) businessActionContext.getActionContext("registerId");
+        long registerId = Long.parseLong(businessActionContext.getActionContext("registerId").toString());
+        Register register = new Register();
+        register.setId(registerId);
+        register.setStatus(1);
+        registerMapper.updateRegister(register);
 
         //提交成功是删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());
@@ -61,9 +70,9 @@ public class RegisterTccActionImpl implements RegisterTccAction {
             return true;
         }
 
-        //Long orderId = (Long) businessActionContext.getActionContext("orderId");
-        long orderId = Long.parseLong(businessActionContext.getActionContext("orderId").toString());
-        registerMapper.deleteById(orderId);
+        //Long registerId = (Long) businessActionContext.getActionContext("registerId");
+        long registerId = Long.parseLong(businessActionContext.getActionContext("registerId").toString());
+        registerMapper.deleteRegisterById(registerId);
 
         //回滚结束时，删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());

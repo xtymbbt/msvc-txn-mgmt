@@ -1,6 +1,8 @@
 package edu.bupt.service;
 
+import edu.bupt.domain.Profile;
 import edu.bupt.domain.Register;
+import edu.bupt.domain.UserInfo;
 import edu.bupt.feign.ProfileClient;
 import edu.bupt.feign.EasyIdGeneratorClient;
 import edu.bupt.feign.UserInfoClient;
@@ -11,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
-    // @Autowired
-    // private RegisterMapper orderMapper;
     @Autowired
     EasyIdGeneratorClient easyIdGeneratorClient;
     @Autowired
@@ -33,7 +33,7 @@ public class RegisterServiceImpl implements RegisterService {
         // orderMapper.create(register);
 
         // 这里修改成调用 TCC 第一节端方法
-        registerTccAction.prepareCreateOrder(
+        registerTccAction.prepareRegister(
                 null,
                 register.getId(),
                 register.getUsername(),
@@ -41,12 +41,19 @@ public class RegisterServiceImpl implements RegisterService {
                 register.getPhoneNumber(),
                 register.getEmail());
 
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUsername(register.getUsername());
+        userInfo.setEmail(register.getEmail());
+        userInfo.setPhoneNumber(register.getPhoneNumber());
 
         // 创建用户信息user info
-        userInfoClient.createUserInfo(register.getProductId(), register.getCount());
+        userInfoClient.createUserInfo(userInfo);
+
+        Profile profile = new Profile();
+        profile.setUsername(register.getUsername());
 
         // 创建用户档案user profile
-        profileClient.decrease(register.getUserId(), register.getMoney());
+        profileClient.createProfile(profile);
 
     }
 }
