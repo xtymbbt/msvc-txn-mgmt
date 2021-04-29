@@ -2,5 +2,5 @@ edu/bridge/UserInfoApp.class
 edu/bridge/service/UserInfoService.class
 edu/bridge/service/impl/UserInfoServiceImpl.class
 edu/bridge/controller/UserInfoController.class
-edu/bridge/mapper/UserInfoMapper.class
 edu/bridge/mapper/impl/UserInfoMapperImpl.class
+edu/bridge/mapper/UserInfoMapper.class

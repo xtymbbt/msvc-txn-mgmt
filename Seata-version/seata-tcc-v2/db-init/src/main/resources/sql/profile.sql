@@ -27,9 +27,9 @@ CREATE TABLE `profile` (
     `contract_institusion_history` varchar(255) DEFAULT NULL COMMENT '以前与社会机构的接触',
     `hobby` varchar(255) DEFAULT NULL COMMENT '兴趣爱好',
     `other_situation` varchar(255) DEFAULT NULL COMMENT '其他需要说明的情况',
+    `status` int(8) DEFAULT NULL COMMENT 'TCC事务状态',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-INSERT INTO `seata_tcc_payment`.`profile` (`id`, `user_id`, `total`, `used`, `residue`) VALUES ('1', '1', '100000', '0', '100000');
 
 -- for AT mode you must to init this sql for you business database. the seata server not need it.
 CREATE TABLE IF NOT EXISTS `undo_log`

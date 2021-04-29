@@ -1,8 +1,8 @@
 edu/bridge/bean/MultiRequestBodyArgumentResolver.class
 edu/bridge/grpc/CommonInfoGrpc$CommonInfoBlockingStub.class
+edu/bridge/domain/CommonResult.class
 edu/bridge/grpc/CommonInfoGrpc$CommonInfoImplBase.class
 edu/bridge/grpc/CommonInfoGrpc$MethodHandlers.class
-edu/bridge/domain/CommonResult.class
 edu/bridge/grpc/CommonInfoOuterClass$HttpRequest$1.class
 edu/bridge/config/WebConfig.class
 edu/bridge/grpc/CommonInfoOuterClass$HttpRequestOrBuilder.class
@@ -11,8 +11,8 @@ edu/bridge/client/CommonInfoGrpcClient.class
 edu/bridge/grpc/CommonInfoOuterClass$HttpRequest$DataDefaultEntryHolder.class
 edu/bridge/grpc/CommonInfoGrpc$CommonInfoFileDescriptorSupplier.class
 edu/bridge/domain/RegisterInfo.class
-edu/bridge/grpc/CommonInfoOuterClass$HttpRequest.class
 edu/bridge/domain/CommonRequestBody.class
+edu/bridge/grpc/CommonInfoOuterClass$HttpRequest.class
 edu/bridge/grpc/CommonInfoOuterClass.class
 edu/bridge/grpc/CommonInfoOuterClass$HttpRequest$ChildrenDefaultEntryHolder.class
 edu/bridge/grpc/CommonInfoGrpc.class
@@ -29,5 +29,5 @@ edu/bridge/grpc/CommonInfoGrpc$CommonInfoStub.class
 edu/bridge/grpc/CommonInfoOuterClass$HttpResponse$1.class
 edu/bridge/grpc/CommonInfoGrpc$1.class
 edu/bridge/grpc/CommonInfoOuterClass$1.class
-edu/bridge/grpc/CommonInfoOuterClass$HttpResponseOrBuilder.class
 edu/bridge/tools/CommonTools.class
+edu/bridge/grpc/CommonInfoOuterClass$HttpResponseOrBuilder.class

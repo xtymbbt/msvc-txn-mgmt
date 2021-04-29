@@ -11,10 +11,9 @@ CREATE TABLE `register` (
  `password` varchar(255) DEFAULT NULL COMMENT '密码',
  `phone_number` bigint(32) DEFAULT NULL COMMENT '手机号',
  `email` varchar(255) DEFAULT NULL COMMENT '邮箱',
+ `status` int(8) DEFAULT NULL COMMENT 'TCC事务状态',
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-ALTER TABLE `register` ADD COLUMN `status` int(1) DEFAULT NULL COMMENT '订单状态：0：创建中；1：已完结' AFTER `money` ;
 
 -- for AT mode you must to init this sql for you business database. the seata server not need it.
 CREATE TABLE IF NOT EXISTS `undo_log`

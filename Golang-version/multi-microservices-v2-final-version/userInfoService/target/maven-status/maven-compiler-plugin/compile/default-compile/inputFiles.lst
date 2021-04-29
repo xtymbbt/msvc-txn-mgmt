@@ -1,6 +1,6 @@
-/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/userInfoService/src/main/java/edu/bridge/service/UserInfoService.java
-/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/userInfoService/src/main/java/edu/bridge/service/impl/UserInfoServiceImpl.java
-/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/userInfoService/src/main/java/edu/bridge/mapper/UserInfoMapper.java
-/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/userInfoService/src/main/java/edu/bridge/mapper/impl/UserInfoMapperImpl.java
-/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/userInfoService/src/main/java/edu/bridge/UserInfoApp.java
-/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-final-version/userInfoService/src/main/java/edu/bridge/controller/UserInfoController.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-v2-final-version/userInfoService/src/main/java/edu/bridge/mapper/impl/UserInfoMapperImpl.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-v2-final-version/userInfoService/src/main/java/edu/bridge/service/impl/UserInfoServiceImpl.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-v2-final-version/userInfoService/src/main/java/edu/bridge/controller/UserInfoController.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-v2-final-version/userInfoService/src/main/java/edu/bridge/mapper/UserInfoMapper.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-v2-final-version/userInfoService/src/main/java/edu/bridge/UserInfoApp.java
+/home/bridge/Documents/github.com/msvc-txn-mgmt/Golang-version/multi-microservices-v2-final-version/userInfoService/src/main/java/edu/bridge/service/UserInfoService.java

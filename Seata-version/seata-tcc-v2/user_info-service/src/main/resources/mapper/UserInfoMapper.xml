@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.bupt.mapper.UserInfoMapper">
     
-    <resultMap type="UserInfo" id="UserInfoResult">
+    <resultMap type="edu.bupt.domain.UserInfo" id="UserInfoResult">
         <result property="id"    column="id"    />
         <result property="username"    column="username"    />
         <result property="phoneNumber"    column="phone_number"    />
@@ -22,7 +22,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, username, phone_number, email, photo, longitude, latitude, current_address, hobby_tags, consume_tags, status from user_info
     </sql>
 
-    <select id="selectUserInfoList" parameterType="UserInfo" resultMap="UserInfoResult">
+    <select id="selectUserInfoList" parameterType="edu.bupt.domain.UserInfo" resultMap="UserInfoResult">
         <include refid="selectUserInfoVo"/>
         <where>  
             <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
@@ -34,7 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertUserInfo" parameterType="UserInfo" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertUserInfo" parameterType="edu.bupt.domain.UserInfo" useGeneratedKeys="true" keyProperty="id">
         insert into user_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="username != null  and username != ''">username,</if>
@@ -62,7 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateUserInfo" parameterType="UserInfo">
+    <update id="updateUserInfo" parameterType="edu.bupt.domain.UserInfo">
         update user_info
         <trim prefix="SET" suffixOverrides=",">
             <if test="username != null  and username != ''">username = #{username},</if>

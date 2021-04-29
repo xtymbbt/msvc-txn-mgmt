@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.bupt.mapper.RegisterMapper">
     
-    <resultMap type="Register" id="RegisterResult">
+    <resultMap type="edu.bupt.domain.Register" id="RegisterResult">
         <result property="id"    column="id"    />
         <result property="username"    column="username"    />
         <result property="password"    column="password"    />
@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, username, password, phone_number, email, status from register_info
     </sql>
 
-    <select id="selectRegisterList" parameterType="Register" resultMap="RegisterResult">
+    <select id="selectRegisterList" parameterType="edu.bupt.domain.Register" resultMap="RegisterResult">
         <include refid="selectRegisterVo"/>
         <where>  
             <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
@@ -29,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertRegister" parameterType="Register" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertRegister" parameterType="edu.bupt.domain.Register" useGeneratedKeys="true" keyProperty="id">
         insert into register_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="username != null  and username != ''">username,</if>
@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateRegister" parameterType="Register">
+    <update id="updateRegister" parameterType="edu.bupt.domain.Register">
         update register_info
         <trim prefix="SET" suffixOverrides=",">
             <if test="username != null  and username != ''">username = #{username},</if>

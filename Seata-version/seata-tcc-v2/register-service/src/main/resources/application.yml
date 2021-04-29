@@ -14,7 +14,7 @@ spring:
         tx-service-group: info_manage_group
 
 server:
-  port: 8083
+  port: 9288
 
 eureka:
   client:

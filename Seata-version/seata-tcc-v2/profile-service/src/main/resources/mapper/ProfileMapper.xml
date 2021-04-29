@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.bupt.mapper.ProfileMapper">
     
-    <resultMap type="Profile" id="ProfileResult">
+    <resultMap type="edu.bupt.domain.Profile" id="ProfileResult">
         <result property="id"    column="id"    />
         <result property="username"    column="username"    />
         <result property="age"    column="age"    />
@@ -34,7 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, username, age, gender, politic_type, birth_date, photo, old_name, identiti_id, career, origin_hometown, birth_place, marital_status, home_address, current_problem, education_history, health_state, marital_status_explicit, employment_history, contract_institusion_history, hobby, other_situation, status from profile
     </sql>
 
-    <select id="selectProfileList" parameterType="Profile" resultMap="ProfileResult">
+    <select id="selectProfileList" parameterType="edu.bupt.domain.Profile" resultMap="ProfileResult">
         <include refid="selectProfileVo"/>
         <where>  
             <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
@@ -47,7 +47,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertProfile" parameterType="Profile" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertProfile" parameterType="edu.bupt.domain.Profile" useGeneratedKeys="true" keyProperty="id">
         insert into profile
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="username != null  and username != ''">username,</if>
@@ -99,7 +99,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateProfile" parameterType="Profile">
+    <update id="updateProfile" parameterType="edu.bupt.domain.Profile">
         update profile
         <trim prefix="SET" suffixOverrides=",">
             <if test="username != null  and username != ''">username = #{username},</if>

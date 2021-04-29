@@ -16,10 +16,9 @@ CREATE TABLE `user_info` (
   `current_address` varchar(255) DEFAULT NULL COMMENT '当前地点',
   `hobby_tags` varchar(255) DEFAULT NULL COMMENT '兴趣标签',
   `consume_tags` varchar(255) DEFAULT NULL COMMENT '消费倾向',
+  `status` int(8) DEFAULT NULL COMMENT 'TCC事务状态',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-INSERT INTO `seata_tcc_storage`.`userInfo` (`id`, `product_id`, `total`, `used`, `residue`) VALUES ('1', '1', '100000', '0', '100000');
 
 -- for AT mode you must to init this sql for you business database. the seata server not need it.
 CREATE TABLE IF NOT EXISTS `undo_log`
