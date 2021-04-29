@@ -14,7 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectRegisterVo">
-        select id, username, password, phone_number, email, status from register_info
+        select id, username, password, phone_number, email, status from register
     </sql>
 
     <select id="selectRegisterList" parameterType="edu.bupt.domain.Register" resultMap="RegisterResult">
@@ -29,9 +29,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertRegister" parameterType="edu.bupt.domain.Register" useGeneratedKeys="true" keyProperty="id">
-        insert into register_info
+    <insert id="insertRegister" parameterType="edu.bupt.domain.Register">
+        insert into register
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
             <if test="username != null  and username != ''">username,</if>
             <if test="password != null  and password != ''">password,</if>
             <if test="phoneNumber != null ">phone_number,</if>
@@ -39,6 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null ">status,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
             <if test="username != null  and username != ''">#{username},</if>
             <if test="password != null  and password != ''">#{password},</if>
             <if test="phoneNumber != null ">#{phoneNumber},</if>
@@ -48,7 +50,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 
     <update id="updateRegister" parameterType="edu.bupt.domain.Register">
-        update register_info
+        update register
         <trim prefix="SET" suffixOverrides=",">
             <if test="username != null  and username != ''">username = #{username},</if>
             <if test="password != null  and password != ''">password = #{password},</if>
@@ -60,11 +62,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteRegisterById" parameterType="Long">
-        delete from register_info where id = #{id}
+        delete from register where id = #{id}
     </delete>
 
     <delete id="deleteRegisterByIds" parameterType="String">
-        delete from register_info where id in 
+        delete from register where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

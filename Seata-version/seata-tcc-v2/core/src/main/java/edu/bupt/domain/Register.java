@@ -5,7 +5,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * register对象 register_info
+ * register对象 register
  * 
  * @author bridge
  * @date 2021-04-29

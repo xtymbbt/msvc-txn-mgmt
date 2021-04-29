@@ -16,7 +16,7 @@ public class RegisterController {
 
     /*
     用户用这个路径进行访问：
-    http://localhost:8083/register?username=zhangfe&password=123456&phoneNumber=18877925543&email=xxx@bupt.edu.cn
+    http://localhost:9288/register?username=zhangfe&password=123456&phoneNumber=18877925543&email=xxx@bupt.edu.cn
      */
     @GetMapping("/register")
     public String register(Register register) {

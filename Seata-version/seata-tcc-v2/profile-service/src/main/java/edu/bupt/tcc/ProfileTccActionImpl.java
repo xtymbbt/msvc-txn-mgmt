@@ -37,10 +37,9 @@ public class ProfileTccActionImpl implements ProfileTccAction {
             return true;
         }
 
+
+        Profile profile = (Profile) businessActionContext.getActionContext("profile");
         //Long profileId = (Long) businessActionContext.getActionContext("profileId");
-        long profileId = Long.parseLong(businessActionContext.getActionContext("profileId").toString());
-        Profile profile = new Profile();
-        profile.setId(profileId);
         profile.setStatus(1);
         profileMapper.updateProfile(profile);
 
@@ -62,9 +61,9 @@ public class ProfileTccActionImpl implements ProfileTccAction {
             return true;
         }
 
-        //Long profileId = (Long) businessActionContext.getActionContext("profileId");
-        long profileId = Long.parseLong(businessActionContext.getActionContext("profileId").toString());
-        profileMapper.deleteProfileById(profileId);
+        Profile profile = (Profile) businessActionContext.getActionContext("profile");
+        //Long profileId = (Long) businessActionContext.getActionContext("profile");
+        profileMapper.deleteProfileById(profile.getId());
 
         //回滚结束时，删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());

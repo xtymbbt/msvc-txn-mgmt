@@ -32,6 +32,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         // orderMapper.create(register);
 
+        System.out.println(register.getId());
         // 这里修改成调用 TCC 第一节端方法
         registerTccAction.prepareRegister(
                 null,

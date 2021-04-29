@@ -34,9 +34,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertUserInfo" parameterType="edu.bupt.domain.UserInfo" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertUserInfo" parameterType="edu.bupt.domain.UserInfo">
         insert into user_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
             <if test="username != null  and username != ''">username,</if>
             <if test="phoneNumber != null ">phone_number,</if>
             <if test="email != null  and email != ''">email,</if>
@@ -49,6 +50,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null ">status,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
             <if test="username != null  and username != ''">#{username},</if>
             <if test="phoneNumber != null ">#{phoneNumber},</if>
             <if test="email != null  and email != ''">#{email},</if>

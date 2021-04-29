@@ -1,10 +1,10 @@
 package edu.bupt.tcc;
 
 import edu.bupt.domain.UserInfo;
-import edu.bupt.domain.UserInfo;
 import edu.bupt.mapper.UserInfoMapper;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +19,8 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
     @Transactional
     @Override
     public boolean prepareCreateUserInfo(BusinessActionContext businessActionContext, UserInfo userInfo) {
+        Time.sleep(5000);
+        System.out.println(businessActionContext);
         log.info("创建用户信息，第一阶段，预留资源 - "+businessActionContext.getXid());
 
         userInfo.setStatus(0);
@@ -39,12 +41,10 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
             return true;
         }
 
+        UserInfo userInfo = (UserInfo) businessActionContext.getActionContext("userInfo");
         //Long userInfoId = (Long) businessActionContext.getActionContext("userInfoId");
-        long userInfoId = Long.parseLong(businessActionContext.getActionContext("userInfoId").toString());
-        UserInfo UserInfo = new UserInfo();
-        UserInfo.setId(userInfoId);
-        UserInfo.setStatus(1);
-        userInfoMapper.updateUserInfo(UserInfo);
+        userInfo.setStatus(1);
+        userInfoMapper.updateUserInfo(userInfo);
 
         //提交成功是删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());
@@ -64,9 +64,9 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
             return true;
         }
 
+        UserInfo userInfo = (UserInfo) businessActionContext.getActionContext("userInfo");
         //Long userInfoId = (Long) businessActionContext.getActionContext("userInfoId");
-        long userInfoId = Long.parseLong(businessActionContext.getActionContext("userInfoId").toString());
-        userInfoMapper.deleteUserInfoById(userInfoId);
+        userInfoMapper.deleteUserInfoById(userInfo.getId());
 
         //回滚结束时，删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());

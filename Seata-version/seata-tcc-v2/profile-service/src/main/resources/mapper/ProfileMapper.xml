@@ -47,9 +47,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertProfile" parameterType="edu.bupt.domain.Profile" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertProfile" parameterType="edu.bupt.domain.Profile">
         insert into profile
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
             <if test="username != null  and username != ''">username,</if>
             <if test="age != null ">age,</if>
             <if test="gender != null ">gender,</if>
@@ -74,6 +75,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null ">status,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
             <if test="username != null  and username != ''">#{username},</if>
             <if test="age != null ">#{age},</if>
             <if test="gender != null ">#{gender},</if>
