@@ -4,7 +4,6 @@ import edu.bupt.domain.UserInfo;
 import edu.bupt.mapper.UserInfoMapper;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jni.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
     @Transactional
     @Override
     public boolean prepareCreateUserInfo(BusinessActionContext businessActionContext, UserInfo userInfo) {
-        Time.sleep(5000);
         System.out.println(businessActionContext);
         log.info("创建用户信息，第一阶段，预留资源 - "+businessActionContext.getXid());
 
