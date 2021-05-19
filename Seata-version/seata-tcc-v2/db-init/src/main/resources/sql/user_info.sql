@@ -53,4 +53,4 @@ CREATE TABLE IF NOT EXISTS segment
 
 INSERT INTO segment
 (VERSION, business_type, max_id, step, increment, remainder, created_at, updated_at)
-VALUES (1, 'user_info_id', 1000, 1000, 1, 0, NOW(), NOW());
+VALUES (1, 'register_id', 1000, 1000, 1, 0, NOW(), NOW());

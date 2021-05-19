@@ -1,5 +1,6 @@
 package edu.bupt.tcc;
 
+import com.alibaba.fastjson.JSON;
 import edu.bupt.domain.Profile;
 import edu.bupt.mapper.ProfileMapper;
 import io.seata.rm.tcc.api.BusinessActionContext;
@@ -37,8 +38,10 @@ public class ProfileTccActionImpl implements ProfileTccAction {
             return true;
         }
 
-
-        Profile profile = (Profile) businessActionContext.getActionContext("profile");
+        Object o = businessActionContext.getActionContext("profile");
+//        System.out.println(o.toString());
+//        System.out.println(o.getClass());
+        Profile profile  = JSON.toJavaObject((JSON) o, Profile.class);
         //Long profileId = (Long) businessActionContext.getActionContext("profileId");
         profile.setStatus(1);
         profileMapper.updateProfile(profile);
@@ -61,7 +64,10 @@ public class ProfileTccActionImpl implements ProfileTccAction {
             return true;
         }
 
-        Profile profile = (Profile) businessActionContext.getActionContext("profile");
+        Object o = businessActionContext.getActionContext("profile");
+//        System.out.println(o.toString());
+//        System.out.println(o.getClass());
+        Profile profile  = JSON.toJavaObject((JSON) o, Profile.class);
         //Long profileId = (Long) businessActionContext.getActionContext("profile");
         profileMapper.deleteProfileById(profile.getId());
 

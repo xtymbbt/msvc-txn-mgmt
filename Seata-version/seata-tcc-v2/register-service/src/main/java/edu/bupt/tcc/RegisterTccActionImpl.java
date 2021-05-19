@@ -46,7 +46,7 @@ public class RegisterTccActionImpl implements RegisterTccAction {
         }
 
         //Long registerId = (Long) businessActionContext.getActionContext("registerId");
-        long registerId = Long.parseLong(businessActionContext.getActionContext("registerId").toString());
+        long registerId = Long.parseLong(businessActionContext.getActionContext("id").toString());
         Register register = new Register();
         register.setId(registerId);
         register.setStatus(1);

@@ -43,7 +43,10 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			ChildrenName: message.Children,
 			Info:         message,
 		}
-		addTreeNode(message.TreeUuid, currTreeNode)
+		err := addTreeNode(message.TreeUuid, currTreeNode)
+		if err != nil {
+			return err
+		}
 	} else {
 		receivedNodes[message.TreeUuid] = make(map[string]*common.TreeNode, 0)
 		tagged[message.TreeUuid] = make(map[string]bool, 0)
@@ -54,7 +57,10 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			ChildrenName: message.Children,
 			Info:         message,
 		}
-		addTreeNode(message.TreeUuid, currTreeNode)
+		err := addTreeNode(message.TreeUuid, currTreeNode)
+		if err != nil {
+			return err
+		}
 		timeMap[message.TreeUuid] = make(chan bool, 1)
 		go timeOut(message.TreeUuid, &err)
 	}
@@ -109,7 +115,7 @@ func timeOut(treeUuid string, err *error) {
 			delete(untagged, treeUuid)
 			delete(timeMap, treeUuid)
 			log.Info("caches deleted.")
-			*err = myErr.NewError(300, "receive message timed out.")
+			*err = myErr.NewError(500, "receive message timed out.")
 		}
 		mutex.Unlock()
 	}
@@ -125,10 +131,10 @@ func isCompleteTree(treeUUID string) bool {
 	return false
 }
 
-func addTreeNode(treeUUID string, node *common.TreeNode) {
+func addTreeNode(treeUUID string, node *common.TreeNode) error {
 	if _, ok := receivedNodes[treeUUID][node.Name]; ok {
 		// ERROR!!!一个节点重复调用，不符合幂等性。
-		return
+		return myErr.NewError(500, "Duplicated Nodes!")
 	}
 	receivedNodes[treeUUID][node.Name] = node
 	if parent, ok := receivedNodes[treeUUID][node.ParentName]; ok {
@@ -176,6 +182,7 @@ func addTreeNode(treeUUID string, node *common.TreeNode) {
 		untagged[treeUUID][node.Name] = true
 	}
 	database.GoWriteTX(node.Info, &node.SqlStr)
+	return nil
 }
 
 func judgeNode(node *common.TreeNode) bool {

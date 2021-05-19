@@ -1,5 +1,6 @@
 package edu.bupt.tcc;
 
+import com.alibaba.fastjson.JSON;
 import edu.bupt.domain.UserInfo;
 import edu.bupt.mapper.UserInfoMapper;
 import io.seata.rm.tcc.api.BusinessActionContext;
@@ -39,7 +40,10 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
             return true;
         }
 
-        UserInfo userInfo = (UserInfo) businessActionContext.getActionContext("userInfo");
+        Object o = businessActionContext.getActionContext("userInfo");
+//        System.out.println(o.toString());
+//        System.out.println(o.getClass());
+        UserInfo userInfo = JSON.toJavaObject((JSON) o, UserInfo.class);
         //Long userInfoId = (Long) businessActionContext.getActionContext("userInfoId");
         userInfo.setStatus(1);
         userInfoMapper.updateUserInfo(userInfo);
@@ -62,7 +66,11 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
             return true;
         }
 
-        UserInfo userInfo = (UserInfo) businessActionContext.getActionContext("userInfo");
+        Object o = businessActionContext.getActionContext("userInfo");
+//        System.out.println(o.toString());
+//        System.out.println(o.getClass());
+        UserInfo userInfo = JSON.toJavaObject((JSON) o, UserInfo.class);
+//        System.out.println(userInfo.getId());
         //Long userInfoId = (Long) businessActionContext.getActionContext("userInfoId");
         userInfoMapper.deleteUserInfoById(userInfo.getId());
 

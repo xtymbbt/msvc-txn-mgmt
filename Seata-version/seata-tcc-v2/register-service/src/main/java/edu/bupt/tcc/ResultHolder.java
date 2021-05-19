@@ -19,10 +19,16 @@ public class ResultHolder {
         }
 
         results.put(xid, v);
+        System.out.println("setResult");
+        System.out.println(map.toString());
+        System.out.println(results);
     }
 
     public static String getResult(Class<?> actionClass, String xid) {
         Map<String, String> results = map.get(actionClass);
+        System.out.println("getResult");
+        System.out.println(map.toString());
+        System.out.println(results);
         if (results != null) {
             return results.get(xid);
         }
