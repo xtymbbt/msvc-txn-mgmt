@@ -25,10 +25,6 @@ func Write(root *common.TreeNode) (err error) {
 	log.Info("Record Datacenter State succeeded.")
 
 	//=======new way=======
-	if err != nil {
-		log.Fatalf("Generate SQL str failed.\n"+
-			"error is: %#v\n", err)
-	}
 	if root != nil {
 		if db, ok := mainDB[root.Info.DbName]; ok {
 			err = startDBTX(db, root)
