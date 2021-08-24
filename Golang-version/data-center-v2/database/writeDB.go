@@ -26,11 +26,11 @@ func Write(root *common.TreeNode) (err error) {
 
 	//=======new way=======
 	if root != nil {
-		if db, ok := mainDB[root.Info.DbName]; ok {
+		if db, ok := mainDB[root.DbName]; ok {
 			err = startDBTX(db, root)
 		} else {
-			err = myErr.NewError(404, "database "+root.Info.DbName+" not found")
-			log.Error("database " + root.Info.DbName + " not found")
+			err = myErr.NewError(404, "database "+root.DbName+" not found")
+			log.Error("database " + root.DbName + " not found")
 			return err
 		}
 		if err != nil {

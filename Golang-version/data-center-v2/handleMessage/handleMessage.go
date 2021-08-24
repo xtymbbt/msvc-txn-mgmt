@@ -51,9 +51,8 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			Name:         message.ServiceUuid,
 			ParentName:   message.ParentUuid,
 			ChildrenName: message.Children,
-			Info:         message,
 		}
-		err := addTreeNode(message.TreeUuid, currTreeNode)
+		err := addTreeNode(message, currTreeNode)
 		if err != nil {
 			return err
 		}
@@ -73,9 +72,8 @@ func HandleMessage(message *commonInfo.HttpRequest) (err error) {
 			Name:         message.ServiceUuid,
 			ParentName:   message.ParentUuid,
 			ChildrenName: message.Children,
-			Info:         message,
 		}
-		err := addTreeNode(message.TreeUuid, currTreeNode)
+		err := addTreeNode(message, currTreeNode)
 		if err != nil {
 			return err
 		}
@@ -175,7 +173,8 @@ func isCompleteTree(treeUUID string) bool {
 }
 
 /*添加子事务节点的方法*/
-func addTreeNode(treeUUID string, node *common.TreeNode) error {
+func addTreeNode(message *commonInfo.HttpRequest, node *common.TreeNode) error {
+	treeUUID := message.TreeUuid
 	mutex.RLock()
 	_, ok := receivedNodes[treeUUID][node.Name]
 	mutex.RUnlock()
@@ -285,7 +284,8 @@ func addTreeNode(treeUUID string, node *common.TreeNode) error {
 		mutex.Unlock()
 	}
 	/*对于每一个子事务节点，均生成相对应的SQL语句，并存在当前节点的信息中*/
-	database.GoWriteTX(node.Info, &node.SqlStr)
+	node.DbName = message.DbName
+	database.GoWriteTX(message, &node.SqlStr)
 	return nil
 }
 
@@ -320,18 +320,18 @@ func judgeNode(node *common.TreeNode) bool {
 }
 
 // Through level order sort, we can have a correct SQL execute order.
-func levelOrder(root *common.TreeNode) []*commonInfo.HttpRequest {
-	result := make([]*commonInfo.HttpRequest, 0)
-	queue := make([]*common.TreeNode, 0)
-	queue = append(queue, root)
-	var tmp *common.TreeNode
-	for len(queue) != 0 {
-		tmp = queue[0]
-		queue = queue[1:]
-		for _, child := range tmp.Children {
-			queue = append(queue, child)
-		}
-		result = append(result, tmp.Info)
-	}
-	return result
-}
+//func levelOrder(root *common.TreeNode) []*commonInfo.HttpRequest {
+//	result := make([]*commonInfo.HttpRequest, 0)
+//	queue := make([]*common.TreeNode, 0)
+//	queue = append(queue, root)
+//	var tmp *common.TreeNode
+//	for len(queue) != 0 {
+//		tmp = queue[0]
+//		queue = queue[1:]
+//		for _, child := range tmp.Children {
+//			queue = append(queue, child)
+//		}
+//		result = append(result, tmp.Info)
+//	}
+//	return result
+//}

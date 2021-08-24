@@ -34,9 +34,9 @@ func startDBTX(db *sql.DB, root *common.TreeNode) (err error) {
 		for _, child := range tmp.Children {
 			queue = append(queue, child)
 		}
-		rows, err := tx.Query("use " + tmp.Info.DbName)
+		rows, err := tx.Query("use " + tmp.DbName)
 		if err != nil {
-			log.Errorf("Query: use "+tmp.Info.DbName+" failed. err is: %#v\n", err)
+			log.Errorf("Query: use "+tmp.DbName+" failed. err is: %#v\n", err)
 			return err
 		}
 		err = rows.Close()
