@@ -5,7 +5,7 @@ import (
 	"data-center-v2/config"
 	"data-center-v2/database"
 	myErr "data-center-v2/error"
-	"data-center-v2/proto/commonInfo"
+	"data-center-v2/proto/execTxnRpc"
 	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
@@ -21,7 +21,7 @@ var (
 )
 
 /*事务中的每一个服务均将本服务的事务信息传递至事务管理系统中的该方法中*/
-func HandleMessage(message *commonInfo.HttpRequest) (err error) {
+func HandleMessage(message *execTxnRpc.TxnMessage) (err error) {
 	/*若当前服务不在线，则立即删除缓存，并返回error*/
 	if !message.Online {
 		log.Infof("Current Service %s is not online or available. Deleting caches...", message.ServiceUuid)
@@ -173,7 +173,7 @@ func isCompleteTree(treeUUID string) bool {
 }
 
 /*添加子事务节点的方法*/
-func addTreeNode(message *commonInfo.HttpRequest, node *common.TreeNode) error {
+func addTreeNode(message *execTxnRpc.TxnMessage, node *common.TreeNode) error {
 	treeUUID := message.TreeUuid
 	mutex.RLock()
 	_, ok := receivedNodes[treeUUID][node.Name]
@@ -229,7 +229,7 @@ func addTreeNode(message *commonInfo.HttpRequest, node *common.TreeNode) error {
 	然后在receivedNodes map中寻找该节点，如若在map中找到，
 	则可以从receivedNodes map中通过该标识获取到相应的子节点的TreeNode形式，
 	然后放入到当前节点的Children数组中*/
-	for name := range node.ChildrenName {
+	for _, name := range node.ChildrenName {
 		ok = false
 		mutex.RLock()
 		child, ok := receivedNodes[treeUUID][name]
@@ -320,8 +320,8 @@ func judgeNode(node *common.TreeNode) bool {
 }
 
 // Through level order sort, we can have a correct SQL execute order.
-//func levelOrder(root *common.TreeNode) []*commonInfo.HttpRequest {
-//	result := make([]*commonInfo.HttpRequest, 0)
+//func levelOrder(root *common.TreeNode) []*execTxnRpc.TxnMessage {
+//	result := make([]*execTxnRpc.TxnMessage, 0)
 //	queue := make([]*common.TreeNode, 0)
 //	queue = append(queue, root)
 //	var tmp *common.TreeNode

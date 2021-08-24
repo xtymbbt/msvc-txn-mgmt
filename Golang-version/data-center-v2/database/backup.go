@@ -2,7 +2,7 @@ package database
 
 import (
 	"data-center-v2/common"
-	"data-center-v2/proto/commonInfo"
+	"data-center-v2/proto/execTxnRpc"
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 )
@@ -49,7 +49,7 @@ func dbBackup(root *common.TreeNode) (err error) {
 	return nil
 }
 
-func goBackup(data *commonInfo.HttpRequest, database map[string]*sql.DB, err *error) {
+func goBackup(data *execTxnRpc.TxnMessage, database map[string]*sql.DB, err *error) {
 	mutex.Lock()
 	dbx := database[data.DbName]
 	/**

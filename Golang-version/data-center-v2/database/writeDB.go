@@ -4,7 +4,7 @@ import (
 	"data-center-v2/common"
 	"data-center-v2/config"
 	myErr "data-center-v2/error"
-	"data-center-v2/proto/commonInfo"
+	"data-center-v2/proto/execTxnRpc"
 	log "github.com/sirupsen/logrus"
 	"sync"
 )
@@ -54,7 +54,7 @@ func Write(root *common.TreeNode) (err error) {
 	return
 }
 
-func GoWriteTX(data *commonInfo.HttpRequest, sqlStr *string) {
+func GoWriteTX(data *execTxnRpc.TxnMessage, sqlStr *string) {
 	/**
 	 * 根据data的两个method判断是增删改查的哪个操作
 	 * true true = 增
@@ -83,7 +83,7 @@ func GoWriteTX(data *commonInfo.HttpRequest, sqlStr *string) {
 	}
 }
 
-func goWrite(data *commonInfo.HttpRequest, err *error) {
+func goWrite(data *execTxnRpc.TxnMessage, err *error) {
 	mutex.Lock()
 	dbx := mainDB[data.DbName]
 	/**
