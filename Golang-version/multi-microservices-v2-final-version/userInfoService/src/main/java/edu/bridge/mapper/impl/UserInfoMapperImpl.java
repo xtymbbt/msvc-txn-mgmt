@@ -1,6 +1,6 @@
 package edu.bridge.mapper.impl;
 
-import edu.bridge.client.CommonInfoGrpcClient;
+import edu.bridge.client.ExecTxnRpcGrpcClient;
 import edu.bridge.domain.CommonRequestBody;
 import edu.bridge.domain.UserInfo;
 import edu.bridge.mapper.UserInfoMapper;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class UserInfoMapperImpl implements UserInfoMapper {
@@ -18,10 +19,10 @@ public class UserInfoMapperImpl implements UserInfoMapper {
     private String dbName;
 
     @Autowired
-    private CommonInfoGrpcClient grpcClient;
+    private ExecTxnRpcGrpcClient grpcClient;
 
     @Override
-    public boolean insertUserInfo(UserInfo userInfo, CommonRequestBody commonRequestBody, HashMap<String, Boolean> children) {
+    public boolean insertUserInfo(UserInfo userInfo, CommonRequestBody commonRequestBody, List<String> children) {
         // =====↓ ↓ ↓ ↓ ↓===== We can write this into a Spring Annotation.=====↓ ↓ ↓ ↓ ↓=====
         HashMap<String, String> data = new HashMap<>();
         // loop registerInfo's all fields through Java's reflection.

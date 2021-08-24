@@ -1,11 +1,11 @@
 syntax = "proto3";
-option go_package ="./commonInfo";
-message HttpRequest {
+option go_package ="./execTxnRpc";
+message TxnMessage {
   bool online = 1;
   string tree_uuid = 2;
   string service_uuid = 3;
   string parent_uuid = 4;
-  map<string, bool> children = 5;
+  repeated string children = 5;
   string db_name = 6;
   string table_name = 7;
   bool method1 = 8;
@@ -14,12 +14,13 @@ message HttpRequest {
   map<string, string> data = 11;
 }
 
-message HttpResponse {
-  bool success = 1;
+message TxnStatus {
+  int32 status = 1;
+  string message = 2;
 }
 
-service CommonInfo {
-  rpc sendToDataCenter (HttpRequest) returns (HttpResponse);
+service ExecTxnRpc {
+  rpc execTxn (TxnMessage) returns (TxnStatus);
 }
 
 // java: mvn compile

@@ -1,14 +1,16 @@
 package edu.bridge.client;
 
 import edu.bridge.domain.CommonRequestBody;
-import edu.bridge.grpc.CommonInfoGrpc;
-import edu.bridge.grpc.CommonInfoOuterClass;
+import edu.bridge.grpc.ExecTxnRpcGrpc;
+import edu.bridge.grpc.ExecTxnRpcOuterClass;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -18,21 +20,21 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/10/15 14:44
  */
 @Component
-public class CommonInfoGrpcClient {
+public class ExecTxnRpcGrpcClient {
     @Value("${gRPC.host}")
     private String host;
     @Value("${gRPC.port}")
     private int port;
 
     private ManagedChannel channel;
-    private CommonInfoGrpc.CommonInfoBlockingStub blockingStub;
+    private ExecTxnRpcGrpc.ExecTxnRpcBlockingStub blockingStub;
 
     @PostConstruct
     public void init() {
         ManagedChannelBuilder<?> channelBuilder =
                 ManagedChannelBuilder.forAddress(host, port).usePlaintext();
         channel = channelBuilder.build();
-        blockingStub = CommonInfoGrpc.newBlockingStub(channel);
+        blockingStub = ExecTxnRpcGrpc.newBlockingStub(channel);
     }
 
     public void shutdown()throws InterruptedException{
@@ -50,15 +52,15 @@ public class CommonInfoGrpcClient {
      *   map<string, string> data = 8;
      */
     public boolean sendToDataCenter(boolean online, CommonRequestBody commonRequestBody,
-                                    Map<String, Boolean> children,
+                                    List<String> children,
                                     String dbName, String tableName, boolean method1,
                                     boolean method2, String query, Map<String, String> data){
-        CommonInfoOuterClass.HttpRequest req = CommonInfoOuterClass.HttpRequest.newBuilder()
+        ExecTxnRpcOuterClass.TxnMessage req = ExecTxnRpcOuterClass.TxnMessage.newBuilder()
                 .setOnline(online)
                 .setTreeUuid(commonRequestBody.getGlobalTransactionUUID().toString())
                 .setServiceUuid(commonRequestBody.getServiceUUID())
                 .setParentUuid(commonRequestBody.getParentUUID())
-                .putAllChildren(children)
+                .addAllChildren(children)
                 .setDbName(dbName)
                 .setTableName(tableName)
                 .setMethod1(method1)
@@ -66,7 +68,7 @@ public class CommonInfoGrpcClient {
                 .setQuery(query)
                 .putAllData(data)
                 .build();
-        CommonInfoOuterClass.HttpResponse reply = blockingStub.sendToDataCenter(req);
-        return reply.getSuccess();
+        ExecTxnRpcOuterClass.TxnStatus reply = blockingStub.execTxn(req);
+        return reply.getStatus() == 200;
     }
 }

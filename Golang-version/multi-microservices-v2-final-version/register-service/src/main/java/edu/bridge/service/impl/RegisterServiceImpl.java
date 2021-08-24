@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
@@ -23,11 +25,11 @@ public class RegisterServiceImpl implements RegisterService {
     public CommonResult registerUser(RegisterInfo registerInfo,
                                      CommonRequestBody commonRequestBody) {
         // === Transaction codes ===
-        HashMap<String, Boolean> children = new HashMap<>();
+        List<String> children = new LinkedList<>();
         if (commonRequestBody.getChild() != null && !commonRequestBody.getChild().equals("")) {
-            children.put(commonRequestBody.getChild(), true);
+            children.add(commonRequestBody.getChild());
         }
-        children.put("userInfoService.createUserInfo", true);
+        children.add("userInfoService.createUserInfo");
         // === Transaction codes ===
 
         if (!registerMapper.insertUser(registerInfo, commonRequestBody, children)) {

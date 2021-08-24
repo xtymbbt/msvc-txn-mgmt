@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -19,9 +21,9 @@ public class ProfileServiceImpl implements ProfileService {
     public CommonResult createProfile(Profile profile,
                                       CommonRequestBody commonRequestBody) {
         // === Transaction codes ===
-        HashMap<String, Boolean> children = new HashMap<>();
+        List<String> children = new LinkedList<>();
         if (commonRequestBody.getChild() != null && !commonRequestBody.getChild().equals("")) {
-            children.put(commonRequestBody.getChild(), true);
+            children.add(commonRequestBody.getChild());
         }
         // === Transaction codes ===
 
