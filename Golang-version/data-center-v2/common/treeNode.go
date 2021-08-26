@@ -5,7 +5,7 @@ type TreeNode struct {
 	ParentName   string
 	Parent       *TreeNode
 	ChildrenName []string
-	Children     []*TreeNode
+	Children     map[*TreeNode]bool
 	DbName       string
 	SqlStr       string
 }

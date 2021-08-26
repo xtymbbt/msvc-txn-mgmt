@@ -31,7 +31,7 @@ func startDBTX(db *sql.DB, root *common.TreeNode) (err error) {
 	for len(queue) != 0 {
 		tmp = queue[0]
 		queue = queue[1:]
-		for _, child := range tmp.Children {
+		for child := range tmp.Children {
 			queue = append(queue, child)
 		}
 		rows, err := tx.Query("use " + tmp.DbName)

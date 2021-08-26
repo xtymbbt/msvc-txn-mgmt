@@ -16,8 +16,8 @@ var (
 	timeMap       = make(map[string]chan bool, 0) /*用于超时删除缓存所用*/
 	mutex         sync.RWMutex
 	receivedNodes = make(map[string]map[string]*common.TreeNode, 0) /*表示目前已接收到的树节点，即子事务节点*/
-	tagged        = make(map[string]map[string]bool, 0)             /*表示目前已完成标记的树节点*/
-	untagged      = make(map[string]map[string]bool, 0)             /*表示目前尚未标记完成的树节点*/
+	blackSet      = make(map[string]map[string]bool, 0)             /*表示目前已完成标记的树节点*/
+	//whiteSet      = make(map[string]map[string]bool, 0)             /*表示目前尚未标记完成的树节点*/
 )
 
 /*事务中的每一个服务均将本服务的事务信息传递至事务管理系统中的该方法中*/
@@ -32,8 +32,8 @@ func HandleMessage(message *execTxnRpc.TxnMessage) (err error) {
 			/*清除当前事务树的缓存*/
 			mutex.Lock()
 			delete(receivedNodes, message.TreeUuid)
-			delete(tagged, message.TreeUuid)
-			delete(untagged, message.TreeUuid)
+			delete(blackSet, message.TreeUuid)
+			//delete(whiteSet, message.TreeUuid)
 			delete(timeMap, message.TreeUuid)
 			mutex.Unlock()
 			log.Info("caches deleted.")
@@ -61,12 +61,12 @@ func HandleMessage(message *execTxnRpc.TxnMessage) (err error) {
 		则需要新建一个事务树，并将该事务树的ID放入receivedNodes map 中，
 		其key值即为事务树ID，其value值即为该事务树所对应的哈希表，
 		以方便查找该事务树中的任意节点。
-		同时，在tagged map和untagged map中新建该事务树ID，
+		同时，在black set和white set中新建该事务树ID，
 		对应的value值即为当前事务树所对应的已标记节点名称和未标记节点名称的哈希表*/
 		mutex.Lock()
 		receivedNodes[message.TreeUuid] = make(map[string]*common.TreeNode, 0)
-		tagged[message.TreeUuid] = make(map[string]bool, 0)
-		untagged[message.TreeUuid] = make(map[string]bool, 0)
+		blackSet[message.TreeUuid] = make(map[string]bool, 0)
+		//whiteSet[message.TreeUuid] = make(map[string]bool, 0)
 		mutex.Unlock()
 		currTreeNode := &common.TreeNode{
 			Name:         message.ServiceUuid,
@@ -115,8 +115,8 @@ func HandleMessage(message *execTxnRpc.TxnMessage) (err error) {
 		if ok { /*清除缓存*/
 			mutex.Lock()
 			delete(receivedNodes, message.TreeUuid)
-			delete(tagged, message.TreeUuid)
-			delete(untagged, message.TreeUuid)
+			delete(blackSet, message.TreeUuid)
+			//delete(whiteSet, message.TreeUuid)
 			delete(timeMap, message.TreeUuid)
 			mutex.Unlock()
 			log.Info("caches deleted.")
@@ -144,8 +144,8 @@ func timeOut(treeUuid string, err *error) {
 		if ok {
 			mutex.Lock()
 			delete(receivedNodes, treeUuid)
-			delete(tagged, treeUuid)
-			delete(untagged, treeUuid)
+			delete(blackSet, treeUuid)
+			//delete(whiteSet, treeUuid)
 			delete(timeMap, treeUuid)
 			mutex.Unlock()
 			log.Info("caches deleted.")
@@ -156,19 +156,25 @@ func timeOut(treeUuid string, err *error) {
 
 /*判断该事务n叉树是否完整(即事务是否完整)的方法*/
 func isCompleteTree(treeUUID string) bool {
-	/*若已标记的节点和未标记的节点长度均为0，则说明还未收到事务信息，返回false*/
-	if len(tagged) == 0 && len(untagged) == 0 {
-		return false
-	}
-	mutex.RLock()
-	_, ok := receivedNodes[treeUUID]["root"]
-	mutex.RUnlock()
-	/*若接收到了根节点，且未标记的节点数为0，则说明收到了所有的子事务节点，返回true*/
-	if ok && len(untagged[treeUUID]) == 0 {
+	// 古老方法：
+	///*若已标记的节点和未标记的节点长度均为0，则说明还未收到事务信息，返回false*/
+	//if len(blackSet[treeUUID]) == 0 && len(whiteSet[treeUUID]) == 0 {
+	//	return false
+	//}
+	//mutex.RLock()
+	//_, ok := receivedNodes[treeUUID]["root"]
+	//mutex.RUnlock()
+	///*若接收到了根节点，且未标记的节点数为0，则说明收到了所有的子事务节点，返回true*/
+	//if ok && len(whiteSet[treeUUID]) == 0 {
+	//	return true
+	//}
+	///*其他情况下，要么是root节点的事务信息还未接收到，要么是white set中对应
+	//事务树ID的map的大小不为0，这两种情况显然均不是事务树完整的情况*/
+
+	// 新方法：
+	if len(receivedNodes[treeUUID]) == len(blackSet[treeUUID]) {
 		return true
 	}
-	/*其他情况下，要么是root节点的事务信息还未接收到，要么是untagged map中对应
-	事务树ID的map的大小不为0，这两种情况显然均不是事务树完整的情况*/
 	return false
 }
 
@@ -197,34 +203,42 @@ func addTreeNode(message *execTxnRpc.TxnMessage, node *common.TreeNode) error {
 	类型为String HashMap，而Children为树节点，类型为TreeNode数组)*/
 	if ok {
 		if parent.Children == nil {
-			parent.Children = make([]*common.TreeNode, 0)
+			parent.Children = make(map[*common.TreeNode]bool, 0)
 		}
-		parent.Children = append(parent.Children, node)
+		ok = false
+		mutex.RLock()
+		ok = parent.Children[node]
+		mutex.RUnlock()
+		if ok {
+			return myErr.NewError(500, "节点重复传入，不符合幂等性！")
+		}
+		parent.Children[node] = true
 		node.Parent = parent
 		if judgeNode(parent) { /*当把本节点放入父节点的Children节点数组中以后，
 			就要判断该节点的父节点是否可以被标记为黑色，如若可以划为已标记节点，则将父节
-			点名称从untagged map 中移至tagged map中*/
+			点名称从white set 中移至black set中*/
 			mutex.Lock()
-			tagged[treeUUID][parent.Name] = true
+			blackSet[treeUUID][parent.Name] = true
 			mutex.Unlock()
-			ok = false
-			mutex.RLock()
-			_, ok := untagged[treeUUID][parent.Name]
-			mutex.RUnlock()
-			if ok {
-				mutex.Lock()
-				delete(untagged[treeUUID], parent.Name)
-				mutex.Unlock()
-			}
-		}
-	} else { /*若在receivedNodes map中找不到该父节点，
-		那么就需要将该父节点名称放入untagged map中，即标记为白色*/
-		if node.ParentName != "" {
-			mutex.Lock()
-			untagged[treeUUID][node.ParentName] = true
-			mutex.Unlock()
+			//ok = false
+			//mutex.RLock()
+			//_, ok := whiteSet[treeUUID][parent.Name]
+			//mutex.RUnlock()
+			//if ok {
+			//	mutex.Lock()
+			//	delete(whiteSet[treeUUID], parent.Name)
+			//	mutex.Unlock()
+			//}
 		}
 	}
+	//else { /*若在receivedNodes map中找不到该父节点，
+	//	那么就需要将该父节点名称放入white set中，即标记为白色*/
+	//if node.ParentName != "" {
+	//	mutex.Lock()
+	//	whiteSet[treeUUID][node.ParentName] = true
+	//	mutex.Unlock()
+	//}
+	//}
 	/*对于当前节点的子节点们，首先从ChildrenName中获取其子节点们的唯一标识，
 	然后在receivedNodes map中寻找该节点，如若在map中找到，
 	则可以从receivedNodes map中通过该标识获取到相应的子节点的TreeNode形式，
@@ -236,53 +250,62 @@ func addTreeNode(message *execTxnRpc.TxnMessage, node *common.TreeNode) error {
 		mutex.RUnlock()
 		if ok {
 			if node.Children == nil {
-				node.Children = make([]*common.TreeNode, 0)
+				node.Children = make(map[*common.TreeNode]bool, 0)
 			}
-			node.Children = append(node.Children, child)
+			ok = false
+			mutex.RLock()
+			ok = node.Children[child]
+			mutex.RUnlock()
+			if ok {
+				return myErr.NewError(500, "节点重复传入，不符合幂等性！")
+			}
+			node.Children[child] = true
 			if child.Parent == nil {
 				child.Parent = node
 			}
 			/*放入Children数组之后，同样需要判断一下当前子节点是否可以被划为已标记节点。
-			如果可以被划为已标记，则将该节点名称从untagged map中转移至tagged map中。*/
+			如果可以被划为已标记，则将该节点名称从white set中转移至black set中。*/
 			if judgeNode(child) {
 				mutex.Lock()
-				tagged[treeUUID][child.Name] = true
+				blackSet[treeUUID][child.Name] = true
 				mutex.Unlock()
-				ok = false
-				mutex.RLock()
-				_, ok := untagged[treeUUID][child.Name]
-				mutex.RUnlock()
-				if ok {
-					mutex.Lock()
-					delete(untagged[treeUUID], child.Name)
-					mutex.Unlock()
-				}
+				//ok = false
+				//mutex.RLock()
+				//_, ok := whiteSet[treeUUID][child.Name]
+				//mutex.RUnlock()
+				//if ok {
+				//	mutex.Lock()
+				//	delete(whiteSet[treeUUID], child.Name)
+				//	mutex.Unlock()
+				//}
 			}
-		} else { /*如若在receivedNodes　map中没有找到该子节点，
-			则直接将该子节点名称放入untagged map之中，即划为未标记节点*/
-			mutex.Lock()
-			untagged[treeUUID][name] = true
-			mutex.Unlock()
 		}
+		//else { /*如若在receivedNodes　map中没有找到该子节点，
+		//	则直接将该子节点名称放入white set之中，即划为未标记节点*/
+		//mutex.Lock()
+		//whiteSet[treeUUID][name] = true
+		//mutex.Unlock()
+		//}
 	}
 	if judgeNode(node) { /*最后判断本节点是否可以被标记为黑色*/
 		mutex.Lock()
-		tagged[treeUUID][node.Name] = true
+		blackSet[treeUUID][node.Name] = true
 		mutex.Unlock()
 		ok = false
-		mutex.RLock()
-		_, ok := untagged[treeUUID][node.Name]
-		mutex.RUnlock()
-		if ok {
-			mutex.Lock()
-			delete(untagged[treeUUID], node.Name)
-			mutex.Unlock()
-		}
-	} else {
-		mutex.Lock()
-		untagged[treeUUID][node.Name] = true
-		mutex.Unlock()
+		//mutex.RLock()
+		//_, ok := whiteSet[treeUUID][node.Name]
+		//mutex.RUnlock()
+		//if ok {
+		//	mutex.Lock()
+		//	delete(whiteSet[treeUUID], node.Name)
+		//	mutex.Unlock()
+		//}
 	}
+	//else {
+	//mutex.Lock()
+	//whiteSet[treeUUID][node.Name] = true
+	//mutex.Unlock()
+	//}
 	/*对于每一个子事务节点，均生成相对应的SQL语句，并存在当前节点的信息中*/
 	node.DbName = message.DbName
 	database.GoWriteTX(message, &node.SqlStr)
