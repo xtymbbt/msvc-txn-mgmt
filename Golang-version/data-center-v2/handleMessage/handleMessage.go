@@ -25,21 +25,7 @@ func HandleMessage(message *execTxnRpc.TxnMessage) (err error) {
 	/*若当前服务不在线，则立即删除缓存，并返回error*/
 	if !message.Online {
 		log.Infof("Current Service %s is not online or available. Deleting caches...", message.ServiceUuid)
-		mutex.RLock()
-		_, ok := receivedNodes[message.TreeUuid]
-		mutex.RUnlock()
-		if ok {
-			/*清除当前事务树的缓存*/
-			mutex.Lock()
-			delete(receivedNodes, message.TreeUuid)
-			delete(blackSet, message.TreeUuid)
-			//delete(whiteSet, message.TreeUuid)
-			delete(timeMap, message.TreeUuid)
-			mutex.Unlock()
-			log.Info("caches deleted.")
-		} else {
-			log.Errorf("no caches found. cannot delete caches at TreeUUID: %s", message.TreeUuid)
-		}
+		clearCache(message.TreeUuid)
 		return myErr.NewError(200, "Current Service "+message.ServiceUuid+" is not online or available.")
 	}
 	mutex.RLock()
@@ -54,6 +40,7 @@ func HandleMessage(message *execTxnRpc.TxnMessage) (err error) {
 		}
 		err := addTreeNode(message, currTreeNode)
 		if err != nil {
+			clearCache(message.TreeUuid)
 			return err
 		}
 	} else { /*若receivedNodes map中不包含该事务树ID，
@@ -75,6 +62,7 @@ func HandleMessage(message *execTxnRpc.TxnMessage) (err error) {
 		}
 		err := addTreeNode(message, currTreeNode)
 		if err != nil {
+			clearCache(message.TreeUuid)
 			return err
 		}
 		mutex.Lock()
@@ -108,23 +96,27 @@ func HandleMessage(message *execTxnRpc.TxnMessage) (err error) {
 		} else { /*事务已超时，不执行写入*/
 			log.Error("current service chain already timed out. deleting caches...")
 		}
-		ok = false
-		mutex.RLock()
-		_, ok = receivedNodes[message.TreeUuid]
-		mutex.RUnlock()
-		if ok { /*清除缓存*/
-			mutex.Lock()
-			delete(receivedNodes, message.TreeUuid)
-			delete(blackSet, message.TreeUuid)
-			//delete(whiteSet, message.TreeUuid)
-			delete(timeMap, message.TreeUuid)
-			mutex.Unlock()
-			log.Info("caches deleted.")
-		} else {
-			log.Errorf("no caches found. cannot delete caches at TreeUUID: %s", message.TreeUuid)
-		}
+		clearCache(message.TreeUuid)
 	}
 	return err
+}
+
+/*通用清除缓存方法*/
+func clearCache(treeUuid string) {
+	mutex.RLock()
+	_, ok := receivedNodes[treeUuid]
+	mutex.RUnlock()
+	if ok { /*清除缓存*/
+		mutex.Lock()
+		delete(receivedNodes, treeUuid)
+		delete(blackSet, treeUuid)
+		//delete(whiteSet, message.TreeUuid)
+		delete(timeMap, treeUuid)
+		mutex.Unlock()
+		log.Info("caches deleted.")
+	} else {
+		log.Errorf("no caches found. cannot delete caches at TreeUUID: %s", treeUuid)
+	}
 }
 
 /*超时处理方法*/
