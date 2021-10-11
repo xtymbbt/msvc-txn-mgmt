@@ -1,20 +1,23 @@
 app:
-  port: 1996
+  port: 52100
   timelapses: 50
-
+cluster:
+  enabled: true
+  reg_center: "127.0.0.1:1996"
+  health_check_time: 30
 database:
   driver: "mysql"
   database_names:
-    - "tx_register"
-    - "tx_profile"
-    - "tx_user_info"
+#    - "tx_register"
+#    - "tx_profile"
+#    - "tx_user_info"
   enable_slave_database: false
   max_idle_connection: 16
   max_open_connection: 100
   main:
     url: "127.0.0.1:3306"
     user: "root"
-    password: "root123456"
+    password: "123456"
   slaves:
     urls:
       - "127.0.0.1:3306"

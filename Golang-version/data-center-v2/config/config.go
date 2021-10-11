@@ -16,19 +16,22 @@ used to config servers.
 */
 
 var (
-	PORT           int
-	TIMELAPSES     time.Duration
-	DBDriver       string
-	DBUrl          string
-	DBUser         string
-	DBPassword     string
-	DBMaxIdleConn  int
-	DBMaxOpenConn  int
-	EnableBKDB     bool
-	DBNAME         []string
-	DBBakUrls      []string
-	DBBakUsers     []string
-	DBBakPasswords []string
+	PORT            int
+	TIMELAPSES      time.Duration
+	DBDriver        string
+	DBUrl           string
+	DBUser          string
+	DBPassword      string
+	DBMaxIdleConn   int
+	DBMaxOpenConn   int
+	EnableBKDB      bool
+	DBNAME          []string
+	DBBakUrls       []string
+	DBBakUsers      []string
+	DBBakPasswords  []string
+	ClusterEnabled  bool
+	RegisterCenter  string
+	HealthCheckTime = 30
 )
 
 func initDefaultValue() {
@@ -46,6 +49,10 @@ func initDefaultValue() {
 	}
 	app := viper.Sub("app")
 	PORT = app.GetInt("port")
+	cluster := viper.Sub("cluster")
+	ClusterEnabled = cluster.GetBool("enabled")
+	RegisterCenter = cluster.GetString("reg_center")
+	HealthCheckTime = cluster.GetInt("health_check_time")
 	TIMELAPSES = time.Second * time.Duration(app.GetInt("timelapses"))
 
 	dbConf := viper.Sub("database")
