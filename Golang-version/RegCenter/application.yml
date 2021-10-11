@@ -1,0 +1,5 @@
+app:
+  port: 1996
+  health_check_time: 30
+cluster:
+  enabled: false

@@ -1,0 +1,16 @@
+syntax = "proto3";
+option go_package ="./cluster";
+message ClientStatus {
+  bool online = 1;
+  int32 port = 2;
+}
+
+message RegCenterStatus {
+  bool online = 1;
+}
+
+service HealthCheck {
+  rpc healthCheck (ClientStatus) returns (RegCenterStatus);
+}
+
+// Go: protoc --go_out=plugins=grpc:. cluster.proto
