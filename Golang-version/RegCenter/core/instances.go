@@ -51,15 +51,15 @@ func RegMsgHandle(msg *cluster.ClientStatus, clientAddr string) error {
 
 func addInstance(clientAddr string, msg *cluster.ClientStatus) error {
 	clientChan := make(chan bool, 0)
+	virtualNum := msg.GetMemory() >> 7 // ➗128
 	conn, err := grpc.Dial(clientAddr, grpc.WithInsecure())
 	if err != nil {
 		log.Errorf("Cannot connect to instance: %v\n"+
 			"Error is: %v\n", clientAddr, err)
 	}
 	log.Infof("Connect to instance at %s success.", clientAddr)
-	go countDownTime(clientChan, clientAddr, msg.GetMemory())
+	go countDownTime(clientChan, clientAddr, virtualNum)
 	var istsInfo *IstsInfo
-	virtualNum := msg.GetMemory()
 	for i := 0; i < int(virtualNum); i++ {
 		hash := hashCode(clientAddr + "x" + strconv.Itoa(i))
 		istsInfo = &IstsInfo{
