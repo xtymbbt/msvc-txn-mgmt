@@ -1,16 +1,16 @@
 package core
 
 import (
-	myErr "RegCenter/error"
 	"RegCenter/proto/execTxnRpc"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
+	"math"
 )
 
 func RouteMessage(message *execTxnRpc.TxnMessage) (*execTxnRpc.TxnStatus, error) {
 	hash := hashCode(message.TreeUuid)
 	log.Debugf("hash is: %v\n", hash)
-	pos := hash & 1023
+	pos := hash
 	log.Debugf("pos is: %v\n", pos)
 	instance, err := findInstance(pos)
 	if err != nil {
@@ -24,20 +24,17 @@ func RouteMessage(message *execTxnRpc.TxnMessage) (*execTxnRpc.TxnStatus, error)
 	return c.ExecTxn(context.Background(), message)
 }
 
-func findInstance(pos uint16) (string, error) {
-	idx := int(pos) * (len(instances) / 1024)
-	instance := instances[idx]
-	for instance == "E" {
-		idx--
-		count := 0
-		for idx == -1 {
-			if count >= 10 {
-				return "", myErr.NewError(500, "instances not found.")
-			}
-			idx = len(instances) - 1
-			count++
+func findInstance(pos uint32) (uint32, error) {
+	var idx uint32
+	var i uint32
+	for i = 0; ; i++ {
+		if i == math.MaxUint32 {
+			i = 0
 		}
-		instance = instances[idx]
+		if _, ok := set[i]; ok {
+			idx = i
+			break
+		}
 	}
-	return instance, nil
+	return idx, nil
 }

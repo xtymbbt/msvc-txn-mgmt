@@ -3,6 +3,7 @@ option go_package ="./cluster";
 message ClientStatus {
   bool online = 1;
   int32 port = 2;
+  uint32 memory = 3;
 }
 
 message RegCenterStatus {

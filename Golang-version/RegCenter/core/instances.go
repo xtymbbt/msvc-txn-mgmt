@@ -6,19 +6,18 @@ import (
 	"RegCenter/proto/cluster"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"strconv"
 	"sync"
 	"time"
 )
 
 var (
-	instances = make([]string, 0, 0)
-	unusedPos = make([]int, 0, 0)
-	set       = make(map[string]*IstsInfo, 0)
-	mutex     sync.RWMutex
+	set   = make(map[uint32]*IstsInfo, 0)
+	mutex sync.RWMutex
 )
 
 type IstsInfo struct {
-	pos  int
+	pos  uint32
 	ch   chan bool
 	conn *grpc.ClientConn
 }
@@ -26,15 +25,22 @@ type IstsInfo struct {
 func RegMsgHandle(msg *cluster.ClientStatus, clientAddr string) error {
 	if msg.Online {
 		mutex.Lock()
-		_, ok := set[clientAddr]
+		hash := hashCode(clientAddr + "x" + "1")
+		_, ok := set[hash]
 		if ok {
-			clientChan := set[clientAddr].ch
+			clientChan := set[hash].ch
 			err := sendChanMsg(clientChan)
 			if err != nil { // 代表着channel已经关闭了，即，上一次健康检查已失败
-				addInstance(clientAddr)
+				err := addInstance(clientAddr, msg)
+				if err != nil {
+					return err
+				}
 			}
 		} else {
-			addInstance(clientAddr)
+			err := addInstance(clientAddr, msg)
+			if err != nil {
+				return err
+			}
 		}
 		mutex.Unlock()
 		return nil
@@ -43,7 +49,7 @@ func RegMsgHandle(msg *cluster.ClientStatus, clientAddr string) error {
 	}
 }
 
-func addInstance(clientAddr string) {
+func addInstance(clientAddr string, msg *cluster.ClientStatus) error {
 	clientChan := make(chan bool, 0)
 	conn, err := grpc.Dial(clientAddr, grpc.WithInsecure())
 	if err != nil {
@@ -51,28 +57,19 @@ func addInstance(clientAddr string) {
 			"Error is: %v\n", clientAddr, err)
 	}
 	log.Infof("Connect to instance at %s success.", clientAddr)
-	go countDownTime(clientChan, clientAddr)
+	go countDownTime(clientChan, clientAddr, msg.GetMemory())
 	var istsInfo *IstsInfo
-	if len(unusedPos) == 0 {
+	virtualNum := msg.GetMemory()
+	for i := 0; i < int(virtualNum); i++ {
+		hash := hashCode(clientAddr + "x" + strconv.Itoa(i))
 		istsInfo = &IstsInfo{
-			pos:  len(instances),
+			pos:  hash,
 			ch:   clientChan,
 			conn: conn,
 		}
-		instances = append(instances, clientAddr)
-		if len(instances) > 1023 {
-			panic(myErr.NewError(500, "Too many instances! Please check your system."))
-		}
-	} else {
-		istsInfo = &IstsInfo{
-			pos:  unusedPos[0],
-			ch:   clientChan,
-			conn: conn,
-		}
-		instances[istsInfo.pos] = clientAddr
-		unusedPos = unusedPos[1:]
+		set[hash] = istsInfo
 	}
-	set[clientAddr] = istsInfo
+	return nil
 }
 
 func sendChanMsg(ch chan bool) (err error) {
@@ -85,7 +82,7 @@ func sendChanMsg(ch chan bool) (err error) {
 	return nil
 }
 
-func countDownTime(clientChan chan bool, clientAddr string) {
+func countDownTime(clientChan chan bool, clientAddr string, virtualNum uint32) {
 	defer func() {
 		log.Infoln("Closing channel...")
 		close(clientChan) // 使用完该通道后，必须关闭该通道。GO的GC不会回收通道。
@@ -98,17 +95,20 @@ LOOP:
 		case <-time.After(time.Duration(config.HealthCheckTime) * time.Second):
 			log.Error("health check timed out, removing " + clientAddr + " server.")
 			mutex.Lock()
-			idx := set[clientAddr].pos
-			instances[idx] = "E" // E - error
-			unusedPos = append(unusedPos, idx)
+			var istsInfo *IstsInfo
+			hash := hashCode(clientAddr + "x" + "1")
+			istsInfo = set[hash]
 			log.Infoln("Closing connection...")
-			err := set[clientAddr].conn.Close()
+			err := istsInfo.conn.Close()
 			if err != nil {
 				log.Errorf("Closing grpc connection to %s failed. This may cause some instabilities of your system. Please check.", clientAddr)
 			} else {
 				log.Infoln("Connection closed.")
 			}
-			delete(set, clientAddr)
+			for i := 0; i < int(virtualNum); i++ {
+				hash = hashCode(clientAddr + "x" + strconv.Itoa(i))
+				delete(set, hash)
+			}
 			mutex.Unlock()
 			break LOOP
 		}
