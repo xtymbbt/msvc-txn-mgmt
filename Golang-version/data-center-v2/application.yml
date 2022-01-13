@@ -5,6 +5,7 @@ cluster:
   enabled: true
   reg_center: "127.0.0.1:1996"
   health_check_time: 30
+  memory: 4096  #MB
 database:
   driver: "mysql"
   database_names:

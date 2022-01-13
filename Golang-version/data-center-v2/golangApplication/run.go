@@ -55,6 +55,7 @@ func hltChk(c cluster.HealthCheckClient) {
 	check, err := c.HealthCheck(context.Background(), &cluster.ClientStatus{
 		Online: true,
 		Port:   int32(config.PORT),
+		Memory: config.Memory,
 	})
 	if err != nil {
 		log.Fatalf("There is an error occured during checking health with register center.\n"+

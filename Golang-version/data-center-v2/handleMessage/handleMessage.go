@@ -318,19 +318,34 @@ func judgeNode(node *common.TreeNode) bool {
 		子节点名称数组是通过事务信息传递过来的，因此子节点名
 		称数组的长度是固定的，因此需要使用随后期接收到的信息
 		而变化的子节点数组的长度与不变的子节点名称数组的长度进行比较。*/
+		if node.Children != nil && node.ChildrenName == nil {
+			return len(node.Children) == 0
+		}
+		if node.ChildrenName != nil && node.Children == nil {
+			return len(node.ChildrenName) == 0
+		}
 		return node.Children != nil &&
 			node.ChildrenName != nil &&
 			len(node.Children) == len(node.ChildrenName)
 	}
 	/*该节点不是根节点时，必须要有父节点。子节点们是否完整的
 	判断逻辑与该节点是根节点时的判断逻辑相同*/
-	if node.Parent != nil && node.Children == nil && node.ChildrenName == nil {
-		return true
-	} else {
+	if node.Parent != nil  {
+		if node.Children == nil && node.ChildrenName == nil{
+			return true
+		}
+		if node.Children != nil && node.ChildrenName == nil {
+			return len(node.Children) == 0
+		}
+		if node.ChildrenName != nil && node.Children == nil {
+			return len(node.ChildrenName) == 0
+		}
 		return node.Parent != nil &&
 			node.Children != nil &&
 			node.ChildrenName != nil &&
 			len(node.Children) == len(node.ChildrenName)
+	} else {
+		return false
 	}
 }
 

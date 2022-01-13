@@ -32,6 +32,7 @@ var (
 	ClusterEnabled  bool
 	RegisterCenter  string
 	HealthCheckTime = 30
+	Memory          uint32
 )
 
 func initDefaultValue() {
@@ -53,6 +54,7 @@ func initDefaultValue() {
 	ClusterEnabled = cluster.GetBool("enabled")
 	RegisterCenter = cluster.GetString("reg_center")
 	HealthCheckTime = cluster.GetInt("health_check_time")
+	Memory = cluster.GetUint32("memory")
 	TIMELAPSES = time.Second * time.Duration(app.GetInt("timelapses"))
 
 	dbConf := viper.Sub("database")

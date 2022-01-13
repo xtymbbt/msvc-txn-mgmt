@@ -25,7 +25,7 @@ type IstsInfo struct {
 func RegMsgHandle(msg *cluster.ClientStatus, clientAddr string) error {
 	if msg.Online {
 		mutex.Lock()
-		hash := hashCode(clientAddr + "x" + "1")
+		hash := hashCode(clientAddr + "x" + "0")
 		_, ok := set[hash]
 		if ok {
 			clientChan := set[hash].ch
@@ -51,7 +51,9 @@ func RegMsgHandle(msg *cluster.ClientStatus, clientAddr string) error {
 
 func addInstance(clientAddr string, msg *cluster.ClientStatus) error {
 	clientChan := make(chan bool, 0)
+	log.Debugf("msg.GetMemory() is: %d\n", msg.GetMemory())
 	virtualNum := msg.GetMemory() >> 7 // ➗128
+	log.Debugf("VirtualNum is: %d\n", virtualNum)
 	conn, err := grpc.Dial(clientAddr, grpc.WithInsecure())
 	if err != nil {
 		log.Errorf("Cannot connect to instance: %v\n"+
@@ -60,13 +62,14 @@ func addInstance(clientAddr string, msg *cluster.ClientStatus) error {
 	log.Infof("Connect to instance at %s success.", clientAddr)
 	go countDownTime(clientChan, clientAddr, virtualNum)
 	var istsInfo *IstsInfo
-	for i := 0; i < int(virtualNum); i++ {
+	for i := 0; i <= int(virtualNum); i++ {
 		hash := hashCode(clientAddr + "x" + strconv.Itoa(i))
 		istsInfo = &IstsInfo{
 			pos:  hash,
 			ch:   clientChan,
 			conn: conn,
 		}
+		log.Debugf("This instance's hashcode is: %d\n", hash)
 		set[hash] = istsInfo
 	}
 	return nil
@@ -96,19 +99,24 @@ LOOP:
 			log.Error("health check timed out, removing " + clientAddr + " server.")
 			mutex.Lock()
 			var istsInfo *IstsInfo
-			hash := hashCode(clientAddr + "x" + "1")
-			istsInfo = set[hash]
-			log.Infoln("Closing connection...")
-			err := istsInfo.conn.Close()
-			if err != nil {
-				log.Errorf("Closing grpc connection to %s failed. This may cause some instabilities of your system. Please check.", clientAddr)
+			hash := hashCode(clientAddr + "x" + "0")
+			istsInfo, ok := set[hash]
+			if ok {
+				log.Infoln("Closing connection...")
+				err := istsInfo.conn.Close()
+				if err != nil {
+					log.Errorf("Closing grpc connection to %s failed. This may cause some instabilities of your system. Please check.", clientAddr)
+				} else {
+					log.Infoln("Connection closed.")
+				}
+				for i := 0; i < int(virtualNum); i++ {
+					hash = hashCode(clientAddr + "x" + strconv.Itoa(i))
+					delete(set, hash)
+				}
 			} else {
-				log.Infoln("Connection closed.")
+				log.Errorf("Could not found a corresponding instance which hashCode is: %d\n", hash)
 			}
-			for i := 0; i < int(virtualNum); i++ {
-				hash = hashCode(clientAddr + "x" + strconv.Itoa(i))
-				delete(set, hash)
-			}
+
 			mutex.Unlock()
 			break LOOP
 		}
