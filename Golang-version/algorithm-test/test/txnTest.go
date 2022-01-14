@@ -1,4 +1,4 @@
-package txnCompletisityTest
+package test
 
 import (
 	"algorithm-test/common"

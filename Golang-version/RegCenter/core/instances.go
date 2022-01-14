@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	set   = make(map[uint32]*IstsInfo, 0)
-	mutex sync.RWMutex
+	set          = make(map[uint32]*IstsInfo, 0)
+	mutex        sync.RWMutex
+	instanceList = make([]uint32, 0, 0)
 )
 
 type IstsInfo struct {
@@ -71,6 +72,29 @@ func addInstance(clientAddr string, msg *cluster.ClientStatus) error {
 		}
 		log.Debugf("This instance's hashcode is: %d\n", hash)
 		set[hash] = istsInfo
+
+		if len(instanceList) == 0 {
+			instanceList = append(instanceList, hash)
+		} else {
+			if hash <= instanceList[0] {
+				instanceList = append([]uint32{hash}, instanceList...)
+			} else {
+				writen := false
+				for j := 1; j < len(instanceList); j++ {
+					if hash <= instanceList[j] {
+						x := make([]uint32, 0, 0)
+						x = append(x, instanceList[:j]...)
+						x = append(x, hash)
+						instanceList = append(x, instanceList[j:]...)
+						writen = true
+						break
+					}
+				}
+				if !writen {
+					instanceList = append(instanceList, hash)
+				}
+			}
+		}
 	}
 	return nil
 }
@@ -112,11 +136,18 @@ LOOP:
 				for i := 0; i < int(virtualNum); i++ {
 					hash = hashCode(clientAddr + "x" + strconv.Itoa(i))
 					delete(set, hash)
+					var idx uint32
+					for j := 0; j < len(instanceList); j++ {
+						if instanceList[j] == hash {
+							idx = hash
+							break
+						}
+					}
+					instanceList = append(instanceList[:idx], instanceList[idx+1:]...)
 				}
 			} else {
 				log.Errorf("Could not found a corresponding instance which hashCode is: %d\n", hash)
 			}
-
 			mutex.Unlock()
 			break LOOP
 		}
