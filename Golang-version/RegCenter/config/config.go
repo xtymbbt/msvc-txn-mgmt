@@ -18,6 +18,7 @@ var (
 	PORT            int
 	ClusterEnabled  bool
 	HealthCheckTime = 30
+	RegNodes        = make([]string, 0, 0)
 )
 
 func initDefaultValue() {
@@ -39,4 +40,5 @@ func initDefaultValue() {
 
 	cluster := viper.Sub("cluster")
 	ClusterEnabled = cluster.GetBool("enabled")
+	RegNodes = cluster.GetStringSlice("regNodes")
 }

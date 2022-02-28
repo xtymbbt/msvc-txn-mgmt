@@ -16,6 +16,7 @@ public class ProfileController {
 
     @PostMapping("/createProfile")
     public String createProfile(@RequestBody Profile profile) {
+        log.info("开始创建档案");
         profileService.createProfile(profile);
         return "创建档案成功";
     }

@@ -23,10 +23,10 @@ values (1, 'register_id', 1000, 1000, 2, 0, now(), now());
 # db2中执行
 insert into easy_id_generator.segment
 (version, business_type, max_id, step, increment, remainder, created_at, updated_at)
-values (1, 'register_id', 1000, 1000, 2, 1, now(), now());
+values (1, 'user_info_id', 1000, 1000, 2, 1, now(), now());
 ## 如果有N个库,需要在每个库执行插入一条记录
 insert into easy_id_generator.segment
 (version, business_type, max_id, step, increment, remainder, created_at, updated_at)
-values (1, 'register_id', 1000, 1000, N, 取值为[0, N - 1], now(), now());
+values (1, 'profile_id', 1000, 1000, N, 取值为[0, N - 1], now(), now());
 
 -- increment和remainder的关系： 当需要10个库时，increment为10，remainder的值依次为0-9

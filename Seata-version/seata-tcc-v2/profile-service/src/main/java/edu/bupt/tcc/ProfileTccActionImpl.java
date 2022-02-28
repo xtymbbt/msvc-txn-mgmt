@@ -19,9 +19,12 @@ public class ProfileTccActionImpl implements ProfileTccAction {
     @Override
     public boolean prepareDecreaseAccount(BusinessActionContext businessActionContext, Profile profile) {
         log.info("创建 profile 第一阶段，预留资源 - "+businessActionContext.getXid());
+        log.info("预留资源成功");
 
         profile.setStatus(0);
+        log.info("一阶段写入数据库：");
         profileMapper.insertProfile(profile);
+        log.info("一阶段写入数据库成功。");
 
         //事务成功，保存一个标识，供第二阶段进行判断
         ResultHolder.setResult(getClass(), businessActionContext.getXid(), "p");
@@ -32,6 +35,7 @@ public class ProfileTccActionImpl implements ProfileTccAction {
     @Override
     public boolean commit(BusinessActionContext businessActionContext) {
         log.info("创建 profile 第二阶段提交，修改 注册 状态1 - "+businessActionContext.getXid());
+        log.info("二阶段提交，修改注册状态成功。");
 
         // 防止幂等性，如果commit阶段重复执行则直接返回
         if (ResultHolder.getResult(getClass(), businessActionContext.getXid()) == null) {
@@ -44,7 +48,9 @@ public class ProfileTccActionImpl implements ProfileTccAction {
         Profile profile  = JSON.toJavaObject((JSON) o, Profile.class);
         //Long profileId = (Long) businessActionContext.getActionContext("profileId");
         profile.setStatus(1);
+        log.info("二阶段写入数据库");
         profileMapper.updateProfile(profile);
+        log.info("二阶段写入数据库成功");
 
         //提交成功是删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());

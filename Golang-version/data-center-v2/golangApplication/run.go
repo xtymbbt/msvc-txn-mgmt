@@ -31,8 +31,7 @@ func Run() {
 				log.Fatalf("Close connection to register center failed.\nError is: %#v\n:", err)
 			}
 		}(conn)
-		c := cluster.NewHealthCheckClient(conn)
-		go healthCheck(c)
+		go healthCheck(conn)
 	}
 	s := grpc.NewServer()
 	register(s)
@@ -44,22 +43,42 @@ func Run() {
 	//s.Serve(lis)
 }
 
-func healthCheck(c cluster.HealthCheckClient) {
+func healthCheck(c *grpc.ClientConn) {
 	for true {
-		time.Sleep(time.Second * time.Duration(config.HealthCheckTime/10)) // 默认每3秒进行一次健康检查，可配置
+		time.Sleep(time.Second * time.Duration(config.HealthCheckTime/3)) // 默认每3秒进行一次健康检查，可配置
 		hltChk(c)
 	}
 }
 
-func hltChk(c cluster.HealthCheckClient) {
+func hltChk(conn *grpc.ClientConn) {
+	c := cluster.NewHealthCheckClient(conn)
 	check, err := c.HealthCheck(context.Background(), &cluster.ClientStatus{
 		Online: true,
 		Port:   int32(config.PORT),
 		Memory: config.Memory,
 	})
 	if err != nil {
-		log.Fatalf("There is an error occured during checking health with register center.\n"+
+		log.Errorf("There is an error occured during checking health with register center.\n"+
 			"Error is: %v\n", err)
+		for err != nil {
+			conn, err = grpc.Dial(config.RegisterCenter, grpc.WithInsecure())
+			if err != nil {
+				log.Errorf("Cannot connect to register center: %v\n"+
+					"Error is: %v\n", config.RegisterCenter, err)
+				continue
+			}
+			log.Infof("Connect to register center at %s success.", config.RegisterCenter)
+			c = cluster.NewHealthCheckClient(conn)
+			check, err = c.HealthCheck(context.Background(), &cluster.ClientStatus{
+				Online: true,
+				Port:   int32(config.PORT),
+				Memory: config.Memory,
+			})
+			if err != nil {
+				log.Errorf("There is an error occured during checking health with register center.\n"+
+					"Error is: %v\n", err)
+			}
+		}
 	}
 	if !check.Online {
 		log.Fatalln("There is an error occured during checking health with register center.")

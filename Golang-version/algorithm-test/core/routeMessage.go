@@ -2,7 +2,6 @@ package core
 
 import (
 	myErr "algorithm-test/error"
-	"fmt"
 	"google.golang.org/protobuf/runtime/protoimpl"
 )
 
@@ -31,7 +30,6 @@ func RouteMessage(message *TxnMessage) (*IstsInfo, error) {
 	//log.Debugf("pos is: %v\n", pos)
 	instance, err := findInstance(pos)
 	istsInfo := set[instance]
-	fmt.Printf("instance is: %#v\n", istsInfo)
 	mutex.Lock()
 	istsInfo.Conn.TxnNum++
 	mutex.Unlock()
@@ -58,6 +56,5 @@ func findInstance(pos uint32) (uint32, error) {
 			idx = instanceList[0]
 		}
 	}
-	fmt.Println(idx)
 	return idx, nil
 }

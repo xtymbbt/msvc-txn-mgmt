@@ -8,10 +8,12 @@ import edu.bupt.feign.EasyIdGeneratorClient;
 import edu.bupt.feign.UserInfoClient;
 import edu.bupt.tcc.RegisterTccAction;
 import io.seata.spring.annotation.GlobalTransactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class RegisterServiceImpl implements RegisterService {
     @Autowired
     EasyIdGeneratorClient easyIdGeneratorClient;
@@ -26,13 +28,16 @@ public class RegisterServiceImpl implements RegisterService {
     @GlobalTransactional
     @Override
     public void register(Register register) {
+        log.info("准备工作完成，开始获取全局唯一ID");
         // 从全局唯一id发号器获得id
         Long userId = easyIdGeneratorClient.nextId("register_id");
+        log.info("获取全局唯一ID成功");
         register.setId(userId);
 
         // orderMapper.create(register);
 
-        System.out.println(register.getId());
+        log.info("register.getId() is: {}", register.getId());
+        log.info("begin tcc prepare");
         // 这里修改成调用 TCC 第一节端方法
         registerTccAction.prepareRegister(
                 null,
@@ -41,8 +46,10 @@ public class RegisterServiceImpl implements RegisterService {
                 register.getPassword(),
                 register.getPhoneNumber(),
                 register.getEmail());
+        log.info("tcc prepare success.");
 
         UserInfo userInfo = new UserInfo();
+        userInfo.setId(register.getId());
         userInfo.setUsername(register.getUsername());
         userInfo.setEmail(register.getEmail());
         userInfo.setPhoneNumber(register.getPhoneNumber());
@@ -51,6 +58,7 @@ public class RegisterServiceImpl implements RegisterService {
         userInfoClient.createUserInfo(userInfo);
 
         Profile profile = new Profile();
+        profile.setId(register.getId());
         profile.setUsername(register.getUsername());
 
         // 创建用户档案user profile

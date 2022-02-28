@@ -62,7 +62,7 @@ func addInstance(clientAddr string, msg *ClientStatus) error {
 	clientChan := make(chan bool, 0)
 	log.Infof("msg.GetMemory() is: %d\n", msg.Memory)
 	virtualNum := msg.Memory >> 7 // ➗128
-	log.Infof("VirtualNum is: %d\n", virtualNum)
+	log.Infof("VirtualNum is: %d\n", virtualNum+1)
 	conn := &ClientConn{
 		ClientAddr: clientAddr,
 		TxnNum:     0,

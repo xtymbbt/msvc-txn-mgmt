@@ -1,6 +1,7 @@
 package server
 
 import (
+	"RegCenter/config"
 	"RegCenter/core"
 	"RegCenter/proto/cluster"
 	"fmt"
@@ -18,12 +19,28 @@ type RegCenterServer struct{}
 
 func (s *RegCenterServer) HealthCheck(ctx context.Context, in *cluster.ClientStatus) (*cluster.RegCenterStatus, error) {
 	log.Debugf("server received message: %v", in)
-	clientIP, err := getClientIP(ctx)
-	clientIP = clientIP + ":" + strconv.Itoa(int(in.Port))
-	log.Infof("clientIP is %s\n", clientIP)
-	if err != nil {
-		log.Errorf("error occured in HealthCheck: %#v\n", err)
-		return nil, err
+	var (
+		err      error
+		clientIP string
+	)
+	if in.Ip != "" {
+		clientIP = in.Ip
+	} else {
+		clientIP, err = getClientIP(ctx)
+		clientIP = clientIP + ":" + strconv.Itoa(int(in.Port))
+		log.Infof("clientIP is %s\n", clientIP)
+		if err != nil {
+			log.Errorf("error occured in HealthCheck: %#v\n", err)
+			return nil, err
+		}
+	}
+	if config.ClusterEnabled {
+		for i := 0; i < len(config.RegNodes); i++ {
+			if config.RegNodes[i] == clientIP {
+				err = core.RegNodeMsgHandle(in, clientIP)
+				return &cluster.RegCenterStatus{Online: true}, err
+			}
+		}
 	}
 	err = core.RegMsgHandle(in, clientIP)
 	if err != nil {

@@ -19,11 +19,15 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
     @Transactional
     @Override
     public boolean prepareCreateUserInfo(BusinessActionContext businessActionContext, UserInfo userInfo) {
+        log.info("prepare 前期准备工作完成，开始预留资源");
         System.out.println(businessActionContext);
         log.info("创建用户信息，第一阶段，预留资源 - "+businessActionContext.getXid());
+        log.info("预留资源成功");
 
         userInfo.setStatus(0);
+        log.info("开始写入数据库");
         userInfoMapper.insertUserInfo(userInfo);
+        log.info("写入数据库成功");
        
         //保存标识
         ResultHolder.setResult(getClass(), businessActionContext.getXid(), "p");
@@ -34,6 +38,7 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
     @Override
     public boolean commit(BusinessActionContext businessActionContext) {
         log.info("创建 userInfo 第二阶段提交，修改 userInfo 状态1 - "+businessActionContext.getXid());
+        log.info("二阶段提交修改状态完毕");
 
         // 防止幂等性，如果commit阶段重复执行则直接返回
         if (ResultHolder.getResult(getClass(), businessActionContext.getXid()) == null) {
@@ -46,7 +51,9 @@ public class UserInfoTccActionImpl implements UserInfoTccAction {
         UserInfo userInfo = JSON.toJavaObject((JSON) o, UserInfo.class);
         //Long userInfoId = (Long) businessActionContext.getActionContext("userInfoId");
         userInfo.setStatus(1);
+        log.info("二阶段开始写入数据库");
         userInfoMapper.updateUserInfo(userInfo);
+        log.info("二阶段写入数据库成功");
 
         //提交成功是删除标识
         ResultHolder.removeResult(getClass(), businessActionContext.getXid());

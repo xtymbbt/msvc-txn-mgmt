@@ -18,7 +18,8 @@ func LoadBalanceTest(实例数目 int, 事务数目 int) {
 		clientstatus := &core.ClientStatus{
 			Online: true,
 			Port:   rand.Int31n(65535),
-			Memory: uint32((rand.Intn(31) + 1) * 1024),
+			//Memory: uint32((rand.Intn(31) + 1) * 1024),
+			Memory: uint32(12800),
 		}
 		log.Infof("clientstatus is: %v\n", clientstatus)
 		clientAddr := strconv.Itoa(rand.Intn(255)) + "." +
@@ -37,10 +38,10 @@ func LoadBalanceTest(实例数目 int, 事务数目 int) {
 		txnMessage.TreeUuid = uuid.NewV1().String()
 		core.RouteMessage(txnMessage)
 	}
+	fmt.Printf("Memory\t|VirtualNum\t|TxnNum\n")
 	for i := 0; i < len(core.AllIsts); i++ {
 		conn := core.AllIsts[i].Conn
-		fmt.Println("TxnNum is:", conn.TxnNum)
-		fmt.Println("Memory is:", conn.Memory)
-		fmt.Println("VirtualNum is:", conn.VirtualNum)
+		fmt.Printf("%d\t|%d\t\t|%d\t\n",
+			conn.Memory, conn.VirtualNum+1, conn.TxnNum)
 	}
 }
