@@ -1,0 +1,9 @@
+app:
+  port: 1998
+  health_check_time: 30
+cluster:
+  enabled: true
+  regNodes:
+    - 127.0.0.1:1996
+    - 127.0.0.1:1997
+    - 127.0.0.1:1998
